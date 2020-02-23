@@ -1,12 +1,11 @@
-#define PI 3.141593
+#define MAX_MARCH_LOOP 100000
+#define MIN_SURF 0.000001
+#define MAX_DIST 10000.
 
 precision highp float;
+
 const mat2 myt = mat2(.12121212, .13131313, -.13131313, .12121212);
 const vec2 mys = vec2(1e4, 1e6);
-
-float random(float n) {
-    return fract(sin(n*318.154121)*31.134131);
-}
 
 vec2 rhash(vec2 uv) {
   uv *= myt;
@@ -51,6 +50,10 @@ vec3 voronoi3d(const in vec3 x) {
   return vec3(sqrt(res), abs(id));
 }
 
+float random(in vec2 p) {
+    return fract(sin(dot(p, vec2(13.12918, 54.12928))*12414.1214)*3857.100291);
+}
+
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
@@ -81,7 +84,7 @@ float fbm(vec3 x) {
 	float v = 0.0;
 	float a = 0.5;
 	vec3 shift = vec3(100);
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < 7; ++i) {
 		v += a * voronoi3d(x).x;
 		x = x * 2.0 + shift;
 		a *= 0.5;
@@ -89,23 +92,25 @@ float fbm(vec3 x) {
 	return v;
 }
 
-void makeRoRd(in vec2 uv, out vec3 ro, out vec3 rd) {
-    ro = vec3(0,0,-5);
-    // vec2 mou = (iMouse.xy/iResolution.xy-.5) * 10.;
-    vec3 lookat = vec3(0,0,0);
+void makeRoRd(out vec3 ro, out vec3 rd, in vec2 uv) {
+    ro = vec3(0,-15,-3.4);
+    
+    vec2 mouse = (iMouse.xy-.5*iResolution.xy)/iResolution.y;
+    vec3 lookat = vec3(mouse*10.,0);
+    lookat = vec3(0, -5, 0);
+    
     vec3 f = normalize(lookat-ro);
+    vec3 r = cross(vec3(0,1,0),f);
     float z = 1.;
+    vec3 u = cross(f,r);
     vec3 c = ro+f*z;
-    vec3 r = cross(vec3(0,1,0), f);
-    vec3 u = cross(f, r);
-    vec3 i = c + uv.x * r + uv.y * u;
+    vec3 i = c + uv.x*r + uv.y*u;
     rd = normalize(i-ro);
 }
 
 mat2 rot (float a) {
     return mat2(
-        cos(a), sin(a),
-        -sin(a), cos(a)
+        sin(a), cos(a), -sin(a), cos(a)
     );
 }
 
@@ -115,66 +120,53 @@ float sdBox( vec3 p, vec3 b )
   return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
 }
 
-float sdSphere( vec3 p, float s )
-{
-  return length(p)-s;
+float sdSphere(vec3 p) {
+    return length(p-vec3(0))-1.; 
 }
 
 float sdNoise(vec3 p) {
+    // p.xz *= rot(p.y);
     float wave = sin(iTime)*.05;
-    float d2 = fbm(vec3(p.x+iTime*2., p.yz))-.15 + wave;
+    //p.xz *= rot(iTime);
+    vec3 p_ = p;
+
+    p_ += iTime*.3;
+    float d2 = fbm(p_)-.2;
     float t = 10.;
-    float r = .5;
+    float r = .3;
     return length(max(vec2(d2,abs(p.y)-t),0.0))-r;
 }
 
-float getDist(in vec3 p) {
-    p.y += iTime*.1;
-    p.xz *= rot(iTime*.1);
-    // p.yz *= rot(iTime*.3);
-    p.xz *= rot(p.y+iTime);
-    // p.yz *= rot(iTime*.1);
-    // vec3 nP = p * p.y;
-    float n = sdNoise((p+vec3(iTime*.1,0.,0.)));
-    float tick = .5 + (sin(iTime)+1.);
-    float mask = max(
-        -sdBox(p, vec3(1.,1000.,1.)),
-        sdBox(p, vec3(1.+tick,1000.,1.+tick))
-    );
-    float d = max(-n, mask);
-    return d;
+float getDist(vec3 p) {
+    // p.xz *= rot(iTime);
+
+    float n = sdNoise(p*.5);
+    p *= 1.+n*.2;
+    float s = sdBox(p, vec3(1.8, 1000.,2.5));
+    // s *= n;
+    // return (s,max(n, s));
+    return s;
 }
 
-void march(
-    out vec3 hitPos,
-    out float step,
-    out vec3 col_,
-    in vec3 ro,
-    in vec3 rd
-) {
-    float t=0.;
-    for(int i=0; i<=3500; i++) {
-        vec3 p = ro+rd*t;
-        float dS = getDist(p);
-        // dS = max(0.0002, abs(dS));
-        if(dS<0.00001) {
-            hitPos = p;
-            col_ = vec3(1.,.5,.01);
+void march(out vec3 hitPos, out float steps, in vec3 ro, in vec3 rd) {
+    float t;
+    vec3 p;
+    for(int i=0; i <= MAX_MARCH_LOOP; i++) {
+        p = ro+t*rd;
+        float distance = getDist(p);
+        distance = max(0.001, abs(distance));
+        if(distance < MIN_SURF || distance > MAX_DIST) {
             break;
         }
-        if(t>1000.) {
-            hitPos = vec3(100000.);
-            col_ = vec3(0.);
-            break;
-        };
-        t += dS;
-        step += 1./150.;
+        t += distance;
+        steps += 1.; 
     }
+    hitPos = p;
 }
 
-vec3 GetNormal(vec3 p) {
+vec3 getNormal(vec3 p) {
 	float d = getDist(p);
-    vec2 e = vec2(.00001, 0);
+    vec2 e = vec2(.0001, 0);
     vec3 n = d - vec3(
         getDist(p-e.xyy),
         getDist(p-e.yxy),
@@ -183,28 +175,31 @@ vec3 GetNormal(vec3 p) {
     return normalize(n);
 }
 
-
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-    vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.y;
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = (fragCoord - .5*iResolution.xy)/iResolution.y;
     vec3 col = vec3(0.);
 
-    vec3 ro,rd;
-    makeRoRd(uv, ro, rd);
+    vec3 ro, rd;
+    makeRoRd(ro, rd, uv);
 
-    float t=0., step_=0.;
-    vec3 hitPos, col_;
-    march(hitPos, step_, col_, ro, rd);
+    vec3 hitPos;
+    float steps;
+    march(hitPos, steps, ro, rd);
 
-    float light = pow(step_, 1.8 + sin(iTime)*1.);
-    float m = dot(vec3(0,5,0), GetNormal(hitPos));
-    float cnd = step(.5, random(floor(iTime*5.)));
-    if ( cnd > .5) {
-        col += vec3(m)*.01;
-    }
-    
-    col += vec3(1.)*light*4.;
+    vec3 n = getNormal(hitPos);
 
-    fragColor = vec4(col,1.0);
+    // col = length(hitPos) < 1000. ? vec3(1,0,0) : vec3(0);
+    float w = sin(iTime) * .25;
+    col += pow(steps/600.,2.3+w);
+    // col = n;
+
+
+    vec3 f = (hitPos-ro);
+    vec3 r = f+2.*n;
+    vec3 lightPos = vec3(sin(iTime)*5.,5,cos(iTime)*5.); 
+    // float s = clamp(0.,1.,dot(r, lightPos));
+    // float def = clamp(0.,1.,dot(n, lightPos));
+    // col += vec3(s)*.1+vec3(def)*.1;
+
+    fragColor = vec4(col, 1.);
 }
