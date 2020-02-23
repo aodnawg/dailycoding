@@ -171,7 +171,6 @@ vec3 getNormal(vec3 p) {
         getDist(p-e.xyy),
         getDist(p-e.yxy),
         getDist(p-e.yyx));
-    
     return normalize(n);
 }
 
