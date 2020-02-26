@@ -123,9 +123,8 @@ float sdSphere( vec3 p, float s )
 float sdNoise(vec3 p) {
     float wave = sin(iTime)*.05;
     float d2 = fbm(vec3(p.x+iTime*2., p.yz))-.15 + wave;
-    float t = 10.;
     float r = .5;
-    return length(max(vec2(d2,abs(p.y)-t),0.0))-r;
+    return length(d2)-r;
 }
 
 float getDist(in vec3 p) {

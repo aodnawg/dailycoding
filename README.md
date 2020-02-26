@@ -1,0 +1,1 @@
+ffmpeg -framerate 24 -i ./2_26_0_35/%04d.tif -vcodec libx264 -pix_fmt yuv420p 2_26_0_35.mp4
