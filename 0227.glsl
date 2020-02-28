@@ -1,10 +1,6 @@
 #define LOOP_MAX 1000
 #define MAX_DIST 1000.
 #define MIN_SURF .0001
-
-#define LOOP_MAX 1000
-#define MAX_DIST 1000.
-#define MIN_SURF .0001
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
@@ -69,6 +65,11 @@ float random(vec3 p) {
 
 float sdTorus( vec3 p, vec2 t )
 {
+    float glitch = random(floor(iTime*8.))*1.5;
+    p.z += iTime;
+    p.xy *= rot(iTime+.01);
+    p.xy *= rot(length(p*glitch*.1));
+    p = mod(p, 4.) - 2.;
   vec2 q = vec2(length(p.xy)-t.x,p.z);
   return length(q)-t.y;
 }
@@ -78,7 +79,7 @@ float sdMoon(vec3 p, float s) {
     p.xz *= rot(r)+iTime;
 
     vec3 bodyP = p;
-    float glitch = random(floor(s*8.))*1.5;
+    float glitch = random(floor(s*.5))*1.5;
     float bn = 1.+fbm(bodyP*8.*fract(s))*glitch;
     float body = length(p+vec3(0,sin(iTime)*.1,0))-.5*bn;
 
@@ -99,12 +100,18 @@ float sdMoon(vec3 p, float s) {
 }
 
 float sdSea(vec3 p) {
-    return max(p.y-.1, p.z-10.) + fbm(p)*2.;
+    return max(p.y-0.2, p.z-10.) + fbm(vec3(p.xy, p.z+fbm(p)*fract(iTime)*10.))*2.;
 }
 
 float map(vec3 p) {
     float torus = sdTorus(p, vec2(.5, .1));
-    return min(torus, sdSea(p));
+    vec3 sp = p;
+    float glitch = step(.6, random(floor(iTime*.5)))*2.;
+    float bn = 1.+fbm(sp*8.*fract(iTime))*glitch;
+    float moon = length(sp) - .5-bn*.5 * abs(sin(random(floor(sp.y*20.))+iTime));
+
+
+    return min(torus, moon);
 }
 
 struct Trace {
