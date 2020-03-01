@@ -1,6 +1,6 @@
-#define LOOP_MAX 1000
-#define MAX_DIST 1000.
-#define MIN_SURF .0001
+#define LOOP_MAX 100
+#define MAX_DIST 100.
+#define MIN_SURF .00001
 #define PI 3.141593
 
 const mat2 myt = mat2(.12121212, .13131313, -.13131313, .12121212);
@@ -124,7 +124,17 @@ float sdMonolith(vec3 p) {
 
     // b = max(p.z, b);
 
-    float b = length(p.xz) - 4.;
+
+    p.xz *= rot(p.y*.04);
+    float z = .5;
+    vec2 uv = p.xz;
+    uv.y += iTime;
+    vec2 gv = fract(uv*z)-.5;
+    vec2 id = floor(uv*z);
+    gv += sin(random(id))*.1;
+    gv += cos(random(random(id)))*.1;
+    float r = mix(-1.,1.,random(id))*0.05;
+    float b = length(gv) - r*sin((iTime+random(id)));
 
 
 
@@ -142,7 +152,10 @@ float map(vec3 p) {
     float monolith = sdMonolith(p);
     float sea = sdSea(p);
 
-    float m = smin(sea, monolith,25.);
+    float glitch = mix(-1., 0., floor(random(iTime*2.)))*50.;
+    glitch *= step(.7, random(floor(iTime*2.)));
+    float m = smin(sea, monolith, 20.+glitch);
+    m = max(-p.z-4., m);
     return m;
 }
 
@@ -183,7 +196,7 @@ Camera makeCam(in vec2 uv, float s) {
     vec3 ro = vec3(0,0,-3);
     // ro += noise(vec3(uv, s))*.01;
     // ro = vec3(cos(s),0,sin(s))*3.;
-    vec3 lookat = vec3(0,0,0);
+    vec3 lookat = vec3(0,-.5,0);
     vec3 f = normalize(lookat-ro);
     vec3 r = cross(vec3(0,1,0), f);
     vec3 u = cross(f, r);
@@ -237,18 +250,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     col += vec3(m);
 
     // sky
-    float z = 25.;
-    float star = 0.;
-    vec2 shift = vec2(200.);
-    for (int i=0; i<=8; i++) {
-        star += makeStar(uv+shift, z);
-        z *= 1.5;
-    }
+    // float z = 25.;
+    // float star = 0.;
+    // vec2 shift = vec2(200.);
+    // for (int i=0; i<=8; i++) {
+    //     star += makeStar(uv+shift, z);
+    //     z *= 1.5;
+    // }
 
-    if(!t_.isHit) {
-        col = vec3(pow(1.-uv.y-.3, 1.5 + sin(iTime)*.1));
-        col += vec3(clamp(0.,1.,star))*(uv.y+.3);
-    }
+    // if(!t_.isHit) {
+    //     col = vec3(pow(1.-uv.y-.3, 1.5 + sin(iTime)*.1));
+    //     col += vec3(clamp(0.,1.,star))*(uv.y+.3);
+    // }
 
     // col = vec3(max(0., clamp(0.,1.,star)));
 
