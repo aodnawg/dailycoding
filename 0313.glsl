@@ -182,10 +182,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec3 p =  c.ro+c.rd*t.d;
     float w = mix(.01,.02, sin(iTime)*.5+.5)*.1;
     vec3 wc = w*vec3(.3+sin(iTime),.21,.32+sin(t.d*.5-iTime*30.)*.3)*10.;
-    col += vec3(pow(t.s,2.)*(t.d*w));
+    
+    float v = pow(t.s,2.)*(t.d*w);
+    col = vec3(1.+sin(iTime*8.)*.3,4.,5.)*v;
+    col -= vec3(.1,2.,2.)*pow(v,3.)*.3;
 
 
     
 
-    fragColor = vec4(col, 1.);
+    fragColor = vec4(1.-col, 1.);
 }
