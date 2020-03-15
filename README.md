@@ -1,1 +1,1 @@
-ffmpeg -s 1000x1000 -framerate 24 -i ./3_12_23_7/%04d.tif -vcodec libx264 -pix_fmt yuv420p 3_12_23_7.mp4
+ffmpeg -s 1000x1000 -framerate 24 -i ./3_14_22_43/%04d.tif -vcodec libx264 -pix_fmt yuv420p 3_14_22_43.mp4
