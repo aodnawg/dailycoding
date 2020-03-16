@@ -3,9 +3,8 @@
 #define MIN_SURF .00001
 #define PI 3.141593
 
-float random(float n) { return fract(sin(n*217.12312)*398.2121561); }
-float random(vec2 p) { return fract(sin(dot(p, vec2(98.108171, 49.10821)))*81.20914); }
-float random(vec3 p) { return random(random(p.xy) + p.z); }
+//////////////////////////////////////////////////////////////////////////
+// refs. https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
@@ -41,52 +40,30 @@ float fbm(vec3 x) {
 	}
 	return v;
 }
+/////////////////////////////////////////////////////////////////////////
 
 mat2 rot(float a) {
     float c = cos(a), s = sin(a);
     return mat2(c,s,-s,c);
 }
 
-vec2 pmod(vec2 p, float r) {
-    float a =  atan(p.x, p.y) + PI/r;
-    float n = PI*2. / r;
-    a = floor(a/n)*n;
-    return p*rot(-a);
-}
-
-float sdBox( in vec2 p, in vec2 b )
-{
-    vec2 d = abs(p)-b;
-    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);
-}
-
-float sdBox( vec3 p, vec3 b )
-{
-  vec3 q = abs(p) - b;
-  return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
-}
-
-float smin( float a, float b, float k )
-{
-    a = pow( a, k ); b = pow( b, k );
-    return pow( (a*b)/(a+b), 1.0/k );
-}
-
 float sdGyroid(in vec3 p, in float z) {
     return dot(sin(p*3.115*z), cos(p.zyx*3.12*z))/z*3.;
 }
 
-float map(vec3 p) {
-
+vec3 transform(in vec3 p) {
     p.x *= 1.4;
     p.xz *= rot(p.y*5.*sin(10.)+iTime);
     p.y *= .3;
-    float r = 1.;
-    float s = length(p)-r;
-    vec3 gp = p+vec3(0,0,iTime);
-    s += sdGyroid(gp, .5)*.02;
-    float gl = 1.4+pow(abs(sin(iTime)),30.)*2.;
-    s -= pow(fbm(p*gl), 4.)*gl;
+    return p;
+}
+
+float map(vec3 p) {
+    p = transform(p);
+    float s = length(p)-1.;
+    s += sdGyroid( p+vec3(0,0,iTime), .5)*.02;
+    float w = 1.4+pow(abs(sin(iTime)),30.)*2.;
+    s -= pow(fbm(p*w), 4.)*w;
     return s/8.;
 }
 
@@ -101,7 +78,6 @@ Trace trace(vec3 ro, vec3 rd, out vec3 cp) {
     for(int i=0; i<LOOP_MAX; i++) {
         vec3 p = ro+rd*t;
         float d = map(p);
-        // d = max(MIN_SURF+.0003+sin(iTime)*.00015, d);
         if(d<MIN_SURF) {
             flag=true;
             break;
@@ -125,7 +101,6 @@ struct Camera {
 Camera makeCam(in vec2 uv, float s) {
     Camera camera;
     vec3 ro = vec3(0,0,-3);
-    // ro += vec3(0,0,0);
     vec3 lookat = vec3(0.);
     vec3 f = normalize(lookat-ro);
     vec3 r = cross(vec3(0,1,0), f);
@@ -140,7 +115,6 @@ Camera makeCam(in vec2 uv, float s) {
     return camera;
 }
 
-
 vec3 getNormal(vec3 p){
     float d = 0.001;
     return normalize(vec3(
@@ -150,12 +124,10 @@ vec3 getNormal(vec3 p){
     ));
 }
 
-
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = (fragCoord.xy - iResolution.xy*.5)/iResolution.y;
     vec3 col = vec3(1.);
-    float s = iTime;
-    Camera c = makeCam(uv, s);
+    Camera c = makeCam(uv, iTime);
     vec3 cp;
     Trace t = trace(c.ro, c.rd, cp);
     vec3 p =  c.ro+c.rd*t.d;
@@ -163,17 +135,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     if(t.isHit) {
         vec3 n = getNormal(p)*.5+.5;
         n*=.3+sin(iTime)*.1;
-        // col = n.y*vec3(1.,5.,3.);
         col = vec3(.2);
         col += dot(n, vec3(cos(iTime),sin(iTime), 0.))*vec3(.7,.1,.8)*1.;
         col += dot(n, vec3(0.,cos(iTime*.4),sin(iTime*.2 + 10.)))*vec3(1.,.3,.2)*1.;
         col += dot(n, vec3(0.,cos(iTime*2.+12.54),sin(iTime*3.+19.56)))*vec3(1.,.3,.65)*1.;
-        // col += dot(n, vec3(cos(iTime),0.,sin(iTime)))*vec3(.3,.2,1.)*3.;
-        // col += max(.2,n.y*n.y*n.y*n.y);
         col += t.s*length(p.xz)*.5;
-    // float v = pow(t.s,1.)*(t.d*w);
     }
-    // col = mix(col, vec3(1.), max(0., max(-10., t.d)/50.));
-
     fragColor = vec4(col, 1.);
 }
