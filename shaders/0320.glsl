@@ -3,20 +3,9 @@ precision highp float;
 uniform vec2 resolution;
 uniform float time;
 
-#define MIN_SURF 0.001
+#define MIN_SURF 0.0001
 #define MAX_DIST 100.
 #define MAX_LOOP 1000
-
-#define iResolution resolution
-#define iTime time
-
-void mainImage(out vec4 fragColor, in vec2 fragCoord);
-
-void main(void) {
-  vec2 uv = (gl_FragCoord.xy * 2.0 - resolution.xy) / min(resolution.x, resolution.y);
-  gl_FragColor = vec4(uv, 1.0, 1.0);
-}
-
 
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
@@ -46,6 +35,12 @@ mat2 rot(float a) {
   return mat2(cos(a), sin(a), -sin(a), cos(a));
 }
 
+vec3 sky(vec3 rd) {
+  float n = max(0., rd.y);
+  n += .5;
+  return mix(vec3(.53, .65, .89), vec3(.89, .65, .53), n);
+}
+
 vec3 makeRay(in vec3 ro, in vec2 uv) {
   float z = 1.;
   vec3 lookat = vec3(0,1,0)*sin(iTime*.3);
@@ -58,10 +53,15 @@ vec3 makeRay(in vec3 ro, in vec2 uv) {
   return rd;
 }
 
+float spc(vec3 ray, vec3 normal, vec3 lightDir) {
+	vec3 r = reflect(-lightDir, normal);
+	return pow(max(dot(r, -ray), 0.0), 10.0);
+}
+
 float sdGyroid(in vec3 p) {
   p.y += iTime;
 	float g = dot(sin(p*2.115), cos(p.zyx*1.12))/30.;
-	return g;
+	return g/5.;
 }
 
 float sdSphere(in vec3 p) {
@@ -98,11 +98,14 @@ float traceSphere(in vec3 ro, in vec3 rd, out bool isHit, out float occ) {
   return t;
 }
 
-vec3 makeSphereColor(in vec3 n) {
+vec3 makeSphereColor(in vec3 ray, in vec3 n) {
   vec3 albd = vec3(1.);
+  vec3 lg = vec3(cos(iTime),1,sin(iTime));
+  float sp = spc(ray, n, lg);
   vec3 dif = vec3(.6,.98,.78)*(1.-n.y);
   dif += vec3(.6,.8,.98)*(1.-n.z);
-  return albd - dif*.1;
+  
+  return albd - dif*.1 + sky(ray)*sp*.01;
 }
 
 float sdSea(in vec3 p) {
@@ -140,12 +143,6 @@ float traceSea(in vec3 ro, in vec3 rd, out bool isHit) {
     t += d;
   }
   return t;
-}
-
-vec3 sky(vec3 rd) {
-  float n = max(0., rd.y);
-  n += .5;
-  return mix(vec3(.53, .65, .89), vec3(.89, .65, .53), n);
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -187,8 +184,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     if(isHit_) { 
       p = p+r*t;
       n = getSphereNormal(p);
-  
-      vec3 c = makeSphereColor(n)*.96;
+      vec3 c = makeSphereColor(normalize(p-ro), n)*.96;
       col = mix(c, scl, smoothstep(0., 1., t/70.));
 
     } else {
@@ -201,7 +197,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   if(isHit) {
     p = ro+rd*t;
     n = getSphereNormal(p);
-    col = makeSphereColor(n);
+    col = makeSphereColor(normalize(p-ro), n);
   } else {
     col += vec3(occ);
   }
