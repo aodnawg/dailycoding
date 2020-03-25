@@ -1,6 +1,6 @@
 precision highp float;
 
-#define MIN_SURF 0.000001
+#define MIN_SURF 0.00001
 #define MAX_DIST 300.
 #define MAX_LOOP 1000
 #define PI 3.1415926536
@@ -25,7 +25,7 @@ float sdGyroid(in vec3 p) {
 }
 
 vec3 makeRay(in vec3 ro, in vec3 lookat, in vec2 uv) {
-  float z = .4;
+  float z = .5;
   vec3 f = normalize(lookat-ro);
   vec3 r = cross(vec3(0,1,0), f);
   vec3 u = cross(f, r);
@@ -36,8 +36,8 @@ vec3 makeRay(in vec3 ro, in vec3 lookat, in vec2 uv) {
 }
 
 float map(vec3 p) {
-  p.xy *= rot(p.z*.1+iTime*p.z*.01);
-  p = mod(p-5., 10.)-5.;
+  p.xy *= rot(sin(p.z));
+  p = mod(p, 10.)-5.;
   float g = sdGyroid(p);
   float r= length(p*.5)-1.7;
   r = max(g, r);
@@ -57,7 +57,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
   // initialize
   vec3 rd = makeRay(ro, lookat, uv);
-  vec3 col;
+  vec3 col = vec3(.43, .65, .89);
   float t = 0., stp=0.;
   vec3 p;
 
@@ -65,14 +65,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   for(int i = 0; i <= MAX_LOOP; i++) {
     p = ro+rd*t;
     float d = map(p);
-    d = max(0.00002, abs(d));
+    d = max(MIN_SURF+.00001, abs(d));
     if(d>MAX_DIST||d<MIN_SURF) break;
     t += d;
     stp+=1.;
   }
 
   float m = stp/1000.;
-  m = mix(m, 0., t/150.); // fog
+  m = mix(m, 0., t/250.); // fog
   m = pow(m, 5.5); // contrast
   col = mix(vec3(.43, .65, .89), vec3(.8+sin(iTime*.3)*.1, .85, .93), m);
 
