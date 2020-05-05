@@ -1,6 +1,1 @@
-{
-  "width": 320,
-  "height": 180,
-  "frameRate": 12,
-  "shader": "0504.glsl"
-}
+{"timestamp":"1588679305707","width":1000,"height":1000,"frameRate":24,"totalTime":30,"shader":"frag.glsl"}

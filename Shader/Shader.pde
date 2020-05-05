@@ -2,8 +2,8 @@ PShader ps;
 JSONObject settings;
 
 int FRAME_RATE;
-int TOTAL_TIME = 60;
-String SAVE_FRAME_PREFIX = month()+"_"+day()+"_"+hour()+"_"+minute();
+int TOTAL_TIME;
+String TIMESTAMP;
 boolean OUTPUT_SEQUENCE;
 int FRAMECOUNT;
 int OFFSET = 0;
@@ -15,6 +15,8 @@ void settings() {
 
 void setup() {
   FRAME_RATE = settings.getInt("frameRate");
+  TOTAL_TIME = settings.getInt("totalTime");
+  TIMESTAMP = settings.getString("timestamp");
   ps = loadShader(settings.getString("shader"));
   ps.set("resolution", float(width), float(height));
   frameRate(FRAME_RATE);
@@ -28,6 +30,7 @@ void draw() {
   if(FRAMECOUNT >= TOTAL_TIME*FRAME_RATE) {
     noLoop();
     println("[*] finished!");
+    exit();
   } else {
     render();
     rec();
@@ -36,7 +39,7 @@ void draw() {
 }
 
 void rec() {
-  saveFrame("sequence/"+SAVE_FRAME_PREFIX+"/####.tif");
+  saveFrame("sequence/"+TIMESTAMP+"/####.tif");
 }
 
 void render() {
