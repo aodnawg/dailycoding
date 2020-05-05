@@ -1,0 +1,6 @@
+{
+  "width": 320,
+  "height": 180,
+  "frameRate": 12,
+  "shader": "0504.glsl"
+}
