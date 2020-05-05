@@ -2,3 +2,4 @@
 **/*.mp4
 out/
 node_modules/
+Shader/data/
