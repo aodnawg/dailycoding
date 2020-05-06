@@ -18,9 +18,12 @@ export const run = (container: HTMLDivElement, shader: string) => {
   var geometry = new THREE.PlaneBufferGeometry(2, 2)
 
   const uniforms = {
-    u_time: { type: 'f', value: 1.0 },
-    u_resolution: { type: 'v2', value: new THREE.Vector2() },
-    u_mouse: { type: 'v2', value: new THREE.Vector2() }
+    time: { type: 'f', value: Math.random() * 10000 },
+    iTime: { type: 'f', value: Math.random() * 10000 },
+    resolution: { type: 'v2', value: new THREE.Vector2() },
+    iResolution: { type: 'v2', value: new THREE.Vector2() },
+    mouse: { type: 'v2', value: new THREE.Vector2() },
+    iMouse: { type: 'v2', value: new THREE.Vector2() }
   }
 
   var material = new THREE.ShaderMaterial({
@@ -39,16 +42,18 @@ export const run = (container: HTMLDivElement, shader: string) => {
 
   const onWindowResize = () => {
     renderer.setSize(container.clientWidth, container.clientHeight)
-    uniforms.u_resolution.value.x = renderer.domElement.width
-    uniforms.u_resolution.value.y = renderer.domElement.height
+    uniforms.resolution.value.y = renderer.domElement.height
+    uniforms.iResolution.value.x = renderer.domElement.width
   }
   onWindowResize()
   window.addEventListener('resize', onWindowResize, false)
 
-  //   document.onmousemove = function(e) {
-  //     uniforms.u_mouse.value.x = e.pageX
-  //     uniforms.u_mouse.value.y = e.pageY
-  //   }
+  document.onmousemove = function(e) {
+    uniforms.mouse.value.x = e.pageX
+    uniforms.iMouse.value.x = e.pageX
+    uniforms.mouse.value.y = e.pageY
+    uniforms.iMouse.value.y = e.pageY
+  }
 
   function animate() {
     requestAnimationFrame(animate)
@@ -57,7 +62,8 @@ export const run = (container: HTMLDivElement, shader: string) => {
   animate()
 
   function render() {
-    uniforms.u_time.value += 0.05
+    uniforms.time.value += 0.05
+    uniforms.iTime.value += 0.05
     renderer.render(scene, camera)
   }
 }

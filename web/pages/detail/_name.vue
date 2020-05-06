@@ -1,19 +1,15 @@
 <template>
   <div class="row">
-    <ul>
-      <li v-for="item in list" :key="item.name">
-        <n-link :to="item.link">{{item.name}}</n-link>
-      </li>
-    </ul>
+    <Canvas v-bind:shader="source" v-bind:name="name" />
   </div>
 </template>
 
 <style>
-.row {
-  margin: 0 16px;
-}
 #code {
   white-space: pre-wrap;
+}
+.row {
+  margin: 0 16px;
 }
 </style>
 
@@ -22,15 +18,10 @@ import Canvas from '~/components/Canvas.vue'
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
 const asyncData = async ({ params }: any) => {
-  const metaData = require('../shaders/meta.json')
-  console.log(metaData)
-  const jsonData = require('../shaders/20200303.json')
+  const metaData = require('../../shaders/meta.json')
+  const jsonData = require(`../../shaders/${params.name}.json`)
   // console.log(jsonData.body)
-  const list = metaData.list.map((name: string) => ({
-    name,
-    link: `/detail/${name}`
-  }))
-  return { source: jsonData.body, title: 'haga', list }
+  return { source: jsonData.body, title: 'haga', name: params.name }
 }
 
 // @Component({ components: { Canvas } })
