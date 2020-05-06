@@ -1,3 +1,10 @@
+uniform vec2 resolution;
+uniform float time;
+uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
+
 #define LOOP_MAX 100
 #define MAX_DIST 100.
 #define MIN_SURF .00001
@@ -233,8 +240,8 @@ float makeStar(in vec2 uv, float z) {
     return star;
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord-iResolution.xy*.5)/iResolution.y;
+void main() {
+    vec2 uv = (gl_FragCoord.xy-iResolution.xy*.5)/iResolution.y;
     vec3 col = vec3(0.);
 
 
@@ -249,25 +256,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float m = t_.s;
     col += vec3(m);
 
-    // sky
-    // float z = 25.;
-    // float star = 0.;
-    // vec2 shift = vec2(200.);
-    // for (int i=0; i<=8; i++) {
-    //     star += makeStar(uv+shift, z);
-    //     z *= 1.5;
-    // }
 
-    // if(!t_.isHit) {
-    //     col = vec3(pow(1.-uv.y-.3, 1.5 + sin(iTime)*.1));
-    //     col += vec3(clamp(0.,1.,star))*(uv.y+.3);
-    // }
-
-    // col = vec3(max(0., clamp(0.,1.,star)));
-
-    // col = vec3(t_.d)/10.;
-
-
-
-    fragColor = vec4(col, 1.);
+    gl_FragColor = vec4(col, 1.);
 }

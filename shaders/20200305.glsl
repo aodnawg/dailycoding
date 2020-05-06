@@ -1,3 +1,10 @@
+uniform vec2 resolution;
+uniform float time;
+uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
+
 #define LOOP_MAX 1000
 #define MAX_DIST 10000.
 #define MIN_SURF .0001
@@ -144,13 +151,13 @@ Camera makeCam(in vec2 uv, float s) {
 }
 
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+void main() {
     vec3 col = vec3(0.);
-    vec2 uv = (fragCoord.xy - iResolution.xy*.5)/iResolution.y;
+    vec2 uv = (gl_FragCoord.xy - iResolution.xy*.5)/iResolution.y;
     float s = iTime;
     Camera c = makeCam(uv, s);
     Trace t = trace(c.ro, c.rd);
     float w = mix(.01,.02, sin(iTime)*.5+.5);
     col = vec3(pow(t.s,1.2)*(1.+t.d*w));
-    fragColor = vec4(col, 1.);
+    gl_FragColor = vec4(col, 1.);
 }

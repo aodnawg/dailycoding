@@ -1,5 +1,12 @@
 precision highp float;
 
+uniform vec2 resolution;
+uniform float time;
+uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
+
 #define MIN_SURF 0.00001
 #define MAX_DIST 300.
 #define MAX_LOOP 1000
@@ -44,8 +51,8 @@ float map(vec3 p) {
   return r/10.;
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  vec2 uv = (fragCoord.xy-.5*iResolution.xy)/iResolution.y;
+void main() {
+  vec2 uv = (gl_FragCoord.xy-.5*iResolution.xy)/iResolution.y;
   float s = iTime*3.;
   vec3 ro = vec3(0,0,-3)+vec3(0,0,s);
   vec3 lookat = vec3(0)+vec3(0,0,s);
@@ -76,5 +83,5 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   m = pow(m, 5.5); // contrast
   col = mix(vec3(.43, .65, .89), vec3(.8+sin(iTime*.3)*.1, .85, .93), m);
 
-  fragColor = vec4(col, 1.);
+  gl_FragColor = vec4(col, 1.);
 }

@@ -1,3 +1,10 @@
+uniform vec2 resolution;
+uniform float time;
+uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
+
 #define MAX_LOOP 1000
 #define MIN_SURF 0.0001
 #define MAX_DIST 10000.
@@ -164,8 +171,8 @@ float glitchNoise(in vec2 uv) {
     return n*.3;
 }
 
-void mainImage(out vec4 fragColor, in vec2 flragCoord) {
-    vec2 uv = (flragCoord.xy-.5*iResolution.xy)/iResolution.y;
+void main() {
+    vec2 uv = (gl_FragCoord.xy-.5*iResolution.xy)/iResolution.y;
     vec2 mouse = (iMouse.xy-.5*iResolution.xy)/iResolution.y;
     vec3 col = vec3(0.);
 
@@ -185,5 +192,5 @@ void mainImage(out vec4 fragColor, in vec2 flragCoord) {
     col = vec3(m);
     // col = 1.-col;
 
-    fragColor = vec4(col, 1.);
+    gl_FragColor = vec4(col, 1.);
 }

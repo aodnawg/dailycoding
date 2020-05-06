@@ -1,3 +1,10 @@
+uniform vec2 resolution;
+uniform float time;
+uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
+
 #define LOOP_MAX 1000000
 #define MAX_DIST 30.
 #define MIN_SURF .00001
@@ -88,9 +95,6 @@ vec2 random2f(ivec2 p) {
     float y = float(p.y);
     return vec2(random(x), random(random(y)));
 }
-
-
-
 
 float random(vec3 p) {
     return random(random(p.xy) + p.z);
@@ -225,8 +229,8 @@ vec3 hsl2rgb( in vec3 c )
     return c.z + c.y * (rgb-0.5)*(1.0-abs(2.0*c.z-1.0));
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-    vec2 uv = (fragCoord-iResolution.xy*.5)/iResolution.y;
+void main() {
+    vec2 uv = (gl_FragCoord.xy-iResolution.xy*.5)/iResolution.y;
 
     float ti_ = floor(iTime*5.);
     float gltc = step(.8, random(ti_));
@@ -270,7 +274,5 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         col = hsl2rgb(vec3(hue,1.,.4+sin(mm)*.2));
     }
 
-    
-
-    fragColor = vec4(col, 1.);
+    gl_FragColor = vec4(col, 1.);
 }
