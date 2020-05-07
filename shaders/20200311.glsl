@@ -271,7 +271,7 @@ float film(vec3 p) {
     // n *= 1.+glitch*100.;
     // return n-.02;
     float r = 2.;
-	float mask = abs(sdBox(p, vec3(r))-.1;
+	float mask = abs(sdBox(p, vec3(r)))-.1;
 	n = max(mask, n-.05);
 
 	return n;

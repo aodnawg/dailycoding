@@ -5,13 +5,6 @@ uniform vec2 mouse;
 #define iTime time
 #define iMouse mouse
 
-uniform vec2 resolution;
-uniform float time;
-uniform vec2 mouse;
-#define iResolution resolution
-#define iTime time
-#define iMouse mouse
-
 #define LOOP_MAX 1000
 #define MAX_DIST 10000.
 #define MIN_SURF .00001
@@ -60,7 +53,7 @@ float fbm(vec3 x) {
 	float a = 0.5;
 	vec3 shift = vec3(100);
 	for (int i = 0; i < 7; ++i) {
-		v += a * voronoi3d(x).x;
+		v += a * noise(x);
 		x = x * 2. + shift;
 		a *= 0.5555;
 	}
