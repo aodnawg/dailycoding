@@ -1,5 +1,5 @@
 // @day 77
-// @title Voronoi Bubble 
+// @title Voronoi Bubble
 // @tag raymarching,digitalart,glsl,shader,creativecoding,cgi,generativeart
 
 #define MIN_SURF 0.0001
@@ -258,14 +258,14 @@ float smin( float a, float b, float k )
 }
 
 float map(vec3 p, vec3 ro, float r) {
-    float z = 2. + sin(iTime+r*199.);
-    vec2 F = cellular(vec3(p*z+vec3(iTime,0,0)+random(ro)*100.));
+    float z = 2. + sin(time+r*199.);
+    vec2 F = cellular(vec3(p*z+vec3(time,0,0)+random(ro)*100.));
 	float dots = smoothstep(0.1, 0.1, F.x);
 	float n = F.y-F.x;
     n *= dots;
 	n /= 5.;
     float s = abs(length(p)-r)-.01;
-    return smin(max(s, n-.01), length(p)-r+cos(iTime)*.02+.02, .1);
+    return smin(max(s, n-.01), length(p)-r+cos(time)*.02+.02, .1);
 }
 
 
@@ -308,7 +308,7 @@ void main(void) {
   vec3 col = vec3(0.);
   float t = 0.;
   vec3 p;
-  vec3 c = vec3(0.), cv = vec3(.43, .32, .56); 
+  vec3 c = vec3(0.), cv = vec3(.43, .32, .56);
 
   // ray march
   for(int i = 0; i <= MAX_LOOP; i++) {
