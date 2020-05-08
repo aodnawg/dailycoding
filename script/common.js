@@ -9,6 +9,7 @@ const processingSketchPath = path.resolve(projectRootPath, "Shader");
 /**
  * @typedef {Object} PathData
  * @property {string} projectRootPath  projectRoot
+ * @property {string} settingJsonPath  render settings passed to Processing and ffmpeg
  * @property {string} shaderSourcePath  shader source code path
  * @property {string} nuxtShaderPath  shader code copied from shader source file
  * @property {string} processingSketchPath  Processing sketch path
@@ -21,6 +22,7 @@ const processingSketchPath = path.resolve(projectRootPath, "Shader");
 /** @type {PathData} */
 const pathData = {
   projectRootPath,
+  settingJsonPath: path.resolve(projectRootPath, "setting.json"),
   shaderSourcePath: path.resolve(projectRootPath, "shaders"),
   nuxtShaderPath: path.resolve(projectRootPath, "web", "shaders"),
   processingSketchPath,

@@ -4,9 +4,11 @@ const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
 const child_process = require("child_process");
+const open = require("open");
 
 const {
   pathData: {
+    settingJsonPath,
     shaderSourcePath,
     processingSketchPath,
     processingDataPath,
@@ -51,17 +53,32 @@ const copyTargetShader = (targetShaderName) => {
 };
 
 /**
- * @param {string} timestamp
- * @return {string} json
+ * @typedef {Object} Setting
+ * @property {number} width
+ * @property {number} height
+ * @property {number} totalTime
+ * @property {number} frameRate
  */
-const makeSettingJson = (timestamp) => {
+/**
+ * @return {Setting}
+ */
+const loadSetting = () =>
+  /** @type {Setting} */ JSON.parse(fs.readFileSync(settingJsonPath, encoding));
+
+/**
+ * @typedef {Object} SetupOnlyOaram
+ * @property {number} timestamp
+ * @property {string} targetShaderPath
+ * @typedef {Setting & SetupOnlyOaram} SetupParam
+ */
+/**
+ * @param {SetupParam} param
+ */
+const makeProcessingSettingJson = ({ timestamp, ...rest }) => {
   const map = {
-    timestamp,
-    width: 1000,
-    height: 1000,
-    frameRate: 4,
-    totalTime: 1,
+    timestamp: `${timestamp}`,
     shader: processingSourceShaderName,
+    ...rest,
   };
   return JSON.stringify(map);
 };
@@ -80,24 +97,25 @@ const inputSettingJson = (jsonString) => {
 };
 
 /**
- * @typedef {Object} SetupedParam
- * @property {string} timestamp
- * @property {string} targetShaderPath
- * @property {string} frameRate
- */
-/**
- * @return {SetupedParam}
+ * @return {SetupParam}
  */
 const setup = () => {
+  const setting = loadSetting();
+
   const targetShaderName = process.argv[2] || getNewestShaderFileName();
   const targetShaderPath = path.resolve(shaderSourcePath, targetShaderName);
   console.log(`[*] setup ${targetShaderPath}`);
   checkTargetShader(targetShaderPath);
   copyTargetShader(targetShaderName);
-  const timestamp = `${getTimestamp()}`;
-  const jsonString = makeSettingJson(timestamp);
+  const timestamp = getTimestamp();
+  const params = {
+    timestamp,
+    targetShaderPath,
+    ...setting,
+  };
+  const jsonString = makeProcessingSettingJson(params);
   inputSettingJson(jsonString);
-  return { timestamp, targetShaderPath, frameRate: "24" }; //TODO: import frameRate
+  return params;
 };
 
 const execProcessing = () => {
@@ -109,44 +127,61 @@ const execProcessing = () => {
 };
 
 /**
- *
- * @typedef {Object} FfmpegParams - parameters required for ffmpeg
- * @property {string} timestamp
- * @property {string} frameRate
+ * @param {SetupParam} ffmpegParams
  */
-/**
- * @param {FfmpegParams} ffmpegParams
- */
-const execEncoding = ({ timestamp, frameRate }) => {
+const execEncoding = ({ width, height, timestamp, frameRate }) => {
   console.log("[*] exec movie encoding");
   const sourcePath = path.resolve(sequenceImagePath, `${timestamp}`);
-  const movieFileName = path.resolve(movieOutputPath, `${timestamp}.mp4`);
-  const cmd = `ffmpeg -s 1000x1000 -framerate ${frameRate} -i ${sourcePath}\\%04d.tif -vcodec libx264 -pix_fmt yuv420p ${movieFileName}`;
+  const outputDir = path.resolve(movieOutputPath, `${timestamp}`);
+  fs.mkdirSync(outputDir);
+  const movieFileName = path.resolve(outputDir, `${timestamp}.mp4`);
+  const cmd = `ffmpeg -s ${width}x${height} -framerate ${frameRate} -i ${sourcePath}\\%04d.tif -vcodec libx264 -pix_fmt yuv420p ${movieFileName}`;
   child_process.execSync(cmd);
   console.log("[*] complete movie encoding");
   return true;
 };
 
 /**
- * @param {string} targetShaderName
+ * @param {SetupParam} param
  */
-const dumpMetaInfo = (targetShaderName) => {
-  const { day, tag, title: titleText } = getMetaFromComment(targetShaderName);
+const dumpMetaInfo = ({ targetShaderPath, timestamp }) => {
+  const { day, tag, title: titleText } = getMetaFromComment(targetShaderPath);
   const dayText = day && `Day ${day}`;
   const tagText = tag && `${tag.map((t) => `#${t}`).join(" ")}`;
-  return [dayText, titleText, tagText].filter((t) => !!t).join("\n\n");
+  const text = [dayText, titleText, tagText].filter((t) => !!t).join("\n\n");
+  const log = `----------------
+
+${text}
+
+----------------`;
+
+  console.log(log);
+
+  fs.writeFileSync(
+    path.resolve(movieOutputPath, `${timestamp}`, `${timestamp}.meta.txt`),
+    text,
+    encoding
+  );
+
+  return text;
+};
+
+const openFolder = ({ timestamp }) => {
+  const openpath = path.resolve(movieOutputPath, `${timestamp}`);
+  open(openpath);
 };
 
 const main = () => {
   // setup
-  const { timestamp, frameRate, targetShaderPath } = setup();
+  const params = setup();
   // exec
   execProcessing();
   // encoding
-  execEncoding({ timestamp, frameRate });
+  execEncoding(params);
   // meta
-  const result = dumpMetaInfo(targetShaderPath);
-  console.log(result);
+  dumpMetaInfo(params);
+  // open folder
+  openFolder(params);
   console.log("[*] done ✨");
 };
 

@@ -20,7 +20,10 @@
   "devDependencies": {
     "express": "^4.17.1",
     "lodash": "^4.17.15",
-    "typescript": "^3.8.3",
+    "open": "^7.0.3",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
     "prettier": "^2.0.5"
   }
 }
