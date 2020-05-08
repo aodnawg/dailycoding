@@ -1,7 +1,12 @@
 import * as THREE from 'three'
 import { fs, vs } from './shaders'
 
-export const run = (container: HTMLDivElement, shader: string) => {
+export const run = (
+  container: HTMLDivElement,
+  renderer: THREE.WebGLRenderer,
+  shader: string,
+  hash?: number
+) => {
   //   let container
   //   let camera, scene, renderer
   //   let uniforms
@@ -18,8 +23,8 @@ export const run = (container: HTMLDivElement, shader: string) => {
   var geometry = new THREE.PlaneBufferGeometry(2, 2)
 
   const uniforms = {
-    time: { type: 'f', value: Math.random() * 10000 },
-    iTime: { type: 'f', value: Math.random() * 10000 },
+    time: { type: 'f', value: hash || Math.random() * 10000 },
+    iTime: { type: 'f', value: hash || Math.random() * 10000 },
     resolution: { type: 'v2', value: new THREE.Vector2() },
     iResolution: { type: 'v2', value: new THREE.Vector2() },
     mouse: { type: 'v2', value: new THREE.Vector2() },
@@ -35,15 +40,18 @@ export const run = (container: HTMLDivElement, shader: string) => {
   var mesh = new THREE.Mesh(geometry, material)
   scene.add(mesh)
 
-  const renderer = new THREE.WebGLRenderer()
+  // const renderer = new THREE.WebGLRenderer()
   renderer.setPixelRatio(window.devicePixelRatio)
 
   container.appendChild(renderer.domElement)
 
   const onWindowResize = () => {
+    console.log(container, container.clientWidth, container.clientHeight)
     renderer.setSize(container.clientWidth, container.clientHeight)
-    uniforms.resolution.value.y = renderer.domElement.height
-    uniforms.iResolution.value.x = renderer.domElement.width
+    uniforms.resolution.value.x = container.clientWidth
+    uniforms.resolution.value.y = container.clientHeight
+    uniforms.iResolution.value.x = container.clientWidth
+    uniforms.iResolution.value.y = container.clientHeight
   }
   onWindowResize()
   window.addEventListener('resize', onWindowResize, false)
@@ -56,7 +64,8 @@ export const run = (container: HTMLDivElement, shader: string) => {
   }
 
   function animate() {
-    requestAnimationFrame(animate)
+    console.log(uniforms)
+    // requestAnimationFrame(animate)
     render()
   }
   animate()
@@ -66,4 +75,6 @@ export const run = (container: HTMLDivElement, shader: string) => {
     uniforms.iTime.value += 0.05
     renderer.render(scene, camera)
   }
+
+  return { render }
 }

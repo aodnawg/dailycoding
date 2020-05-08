@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>{{name}}</h2>
-    <div id="canvasBox" ref="canvasRef" />
+    <Canvas v-bind="{shader, name }" />
     <code class="code">{{ shader }}</code>
   </div>
 </template>
@@ -36,30 +36,11 @@ h2 {
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import * as THREE from 'three'
-import { run } from './three'
+import Canvas from '~/components/Canvas/Canvas.vue'
 
-@Component
-export default class Canvas extends Vue {
+@Component({ components: { Canvas } })
+export default class DetailView extends Vue {
   @Prop({ type: String, required: true }) readonly shader!: string
   @Prop({ type: String, required: true }) readonly name!: string
-
-  mounted() {
-    run(this.$refs.canvasRef as HTMLDivElement, this.shader)
-  }
-
-  //   get source() {
-  //     return this.shader;
-  //   }
 }
-
-// export default Vue.extend({
-//   props: {
-//     shader: {
-//       type: Object,
-//       required: true
-//     } as PropOptions<Shader>
-//   }
-// })
-//
 </script>
