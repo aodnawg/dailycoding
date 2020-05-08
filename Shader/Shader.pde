@@ -7,18 +7,23 @@ String TIMESTAMP;
 boolean OUTPUT_SEQUENCE;
 int FRAMECOUNT;
 int OFFSET = 0;
+int WIDTH;
+int HEIHGT;
 
 void settings() {
   settings = loadJSONObject("setting.json");
-  size(1000, 1000, P2D);
+  WIDTH = settings.getInt("width");
+  HEIHGT = settings.getInt("height");
+  size(WIDTH, HEIHGT, P2D);
 }
 
 void setup() {
   FRAME_RATE = settings.getInt("frameRate");
   TOTAL_TIME = settings.getInt("totalTime");
+
   TIMESTAMP = settings.getString("timestamp");
   ps = loadShader(settings.getString("shader"));
-  ps.set("resolution", float(width), float(height));
+  ps.set("resolution", float(WIDTH), float(HEIHGT));
   frameRate(FRAME_RATE);
 }
 
