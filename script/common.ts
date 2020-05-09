@@ -23,6 +23,8 @@ export const pathData = {
   processingSettingJsonName: "setting.json",
   /** Processing output path */
   sequenceImagePath: path.resolve(processingSketchPath, "sequence"),
+  /** Processing thumbnail output path */
+  thumbnailImagePath: path.resolve(processingSketchPath, "thumbnail"),
   /** ffmpeg movie out put file */
   movieOutputPath: path.resolve(projectRootPath, "out"),
 };
