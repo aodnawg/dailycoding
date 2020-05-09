@@ -4,7 +4,7 @@
   "description": "- shaders that I write everyday.\r - the codes are shared at instagram, shadertoy and more.\r - check my sns accounts below.\r   - [instagram](https://www.instagram.com/aodnawg/)\r   - [neort](https://neort.io/9PPUYunxKiZJW651hpCtwdIekyu1)\r   - [shadertoy](https://www.shadertoy.com/user/aodnawg)",
   "main": "index.js",
   "scripts": {
-    "make": "node ./script/makeMovie.js",
+    "make": "ts-node ./script/makeMovie.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,9 +18,12 @@
   },
   "homepage": "https://github.com/aodnawg/dailycoding#readme",
   "devDependencies": {
+    "@types/node": "^13.13.5",
+    "@types/open": "^6.2.1",
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "open": "^7.0.3",
+    "ts-node": "^8.10.1",
     "typescript": "^3.8.3"
   },
   "dependencies": {

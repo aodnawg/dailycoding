@@ -1,43 +1,32 @@
-// @ts-check
+import fs from "fs";
+import path from "path";
+import assert from "assert";
+import child_process from "child_process";
+import openNpm from "open";
 
-const fs = require("fs");
-const path = require("path");
-const assert = require("assert");
-const child_process = require("child_process");
-const open = require("open");
-
+import { pathData, encoding, getNewestShaderFileName } from "./common";
 const {
-  pathData: {
-    settingJsonPath,
-    shaderSourcePath,
-    processingSketchPath,
-    processingDataPath,
-    processingSourceShaderName,
-    processingSettingJsonName,
-    sequenceImagePath,
-    movieOutputPath,
-  },
-  encoding,
-  getNewestShaderFileName,
-} = require("./common");
+  settingJsonPath,
+  shaderSourcePath,
+  processingSketchPath,
+  processingDataPath,
+  processingSourceShaderName,
+  processingSettingJsonName,
+  sequenceImagePath,
+  movieOutputPath,
+} = pathData;
 
-const getMetaFromComment = require("./getMetaFromComment");
+import { getMetaFromComment } from "./getMetaFromComment";
 
 const getTimestamp = () => new Date().getTime();
 
-/**
- * @param {string} targetShaderPath
- */
-const checkTargetShader = (targetShaderPath) => {
+const checkTargetShader = (targetShaderPath: string) => {
   const result = fs.existsSync(targetShaderPath);
   assert(result, `[*] ${targetShaderPath} does not exist.`);
   return targetShaderPath;
 };
 
-/**
- * @param {string} targetShaderName
- */
-const copyTargetShader = (targetShaderName) => {
+const copyTargetShader = (targetShaderName: string) => {
   const destinationPath = path.resolve(
     processingDataPath,
     processingSourceShaderName
@@ -52,54 +41,27 @@ const copyTargetShader = (targetShaderName) => {
   );
 };
 
-/**
- * @typedef {Object} Setting
- * @property {number} width
- * @property {number} height
- * @property {number} totalTime
- * @property {number} frameRate
- */
-/**
- * @return {Setting}
- */
-const loadSetting = () =>
-  /** @type {Setting} */ JSON.parse(fs.readFileSync(settingJsonPath, encoding));
+interface Setting {
+  width: number;
+  height: number;
+  totalTime: number;
+  frameRate: number;
+}
 
-/**
- * @typedef {Object} SetupOnlyOaram
- * @property {number} timestamp
- * @property {string} targetShaderPath
- * @typedef {Setting & SetupOnlyOaram} SetupParam
- */
-/**
- * @param {SetupParam} param
- */
-const makeProcessingSettingJson = ({ timestamp, ...rest }) => {
-  const map = {
-    timestamp: `${timestamp}`,
-    shader: processingSourceShaderName,
-    ...rest,
-  };
-  return JSON.stringify(map);
+const loadSetting = (): Setting => {
+  const fileData = fs.readFileSync(settingJsonPath, encoding);
+  return JSON.parse(fileData.toString());
 };
 
-/**
- * @param {string} jsonString
- */
-const inputSettingJson = (jsonString) => {
-  const jsonPath = path.resolve(processingDataPath, processingSettingJsonName);
-  if (fs.existsSync(jsonPath)) {
-    fs.unlinkSync(jsonPath);
-    console.log("[*] removed old setting.");
-  }
-  fs.writeFileSync(jsonPath, jsonString, { encoding });
-  console.log("[*] input rendering option.");
-};
+interface makeProcessingJsonParam extends Setting {
+  timestamp: number;
+}
 
-/**
- * @return {SetupParam}
- */
-const setup = () => {
+interface SetupParam extends Setting {
+  timestamp: number;
+  targetShaderPath: string;
+}
+const setup = (): SetupParam => {
   const setting = loadSetting();
 
   const targetShaderName = process.argv[2] || getNewestShaderFileName();
@@ -113,12 +75,41 @@ const setup = () => {
     targetShaderPath,
     ...setting,
   };
-  const jsonString = makeProcessingSettingJson(params);
-  inputSettingJson(jsonString);
+
   return params;
 };
 
-const execProcessing = () => {
+const makeProcessingSettingMap = ({
+  timestamp,
+  ...rest
+}: SetupParam): ProcessingParam => {
+  const map = {
+    timestamp: `${timestamp}`,
+    shader: processingSourceShaderName,
+    ...rest,
+  };
+  return map;
+};
+
+const inputSettingJson = (jsonString: string) => {
+  const jsonPath = path.resolve(processingDataPath, processingSettingJsonName);
+  if (fs.existsSync(jsonPath)) {
+    fs.unlinkSync(jsonPath);
+    console.log("[*] removed old setting.");
+  }
+  fs.writeFileSync(jsonPath, jsonString, { encoding });
+  console.log("[*] input rendering option.");
+};
+
+interface ProcessingParam extends Omit<SetupParam, "timestamp"> {
+  timestamp: string;
+  shader: string;
+}
+
+const execProcessing = (params: SetupParam) => {
+  const processingParam = makeProcessingSettingMap(params);
+  const jsonString = JSON.stringify(processingParam);
+  inputSettingJson(jsonString);
   console.log("[*] exec Processing.");
   const cmd = `processing-java --sketch=${processingSketchPath} --run`;
   child_process.execSync(cmd);
@@ -126,10 +117,7 @@ const execProcessing = () => {
   return true;
 };
 
-/**
- * @param {SetupParam} ffmpegParams
- */
-const execEncoding = ({ width, height, timestamp, frameRate }) => {
+const execEncoding = ({ width, height, timestamp, frameRate }: SetupParam) => {
   console.log("[*] exec movie encoding");
   const sourcePath = path.resolve(sequenceImagePath, `${timestamp}`);
   const outputDir = path.resolve(movieOutputPath, `${timestamp}`);
@@ -141,13 +129,10 @@ const execEncoding = ({ width, height, timestamp, frameRate }) => {
   return true;
 };
 
-/**
- * @param {SetupParam} param
- */
-const dumpMetaInfo = ({ targetShaderPath, timestamp }) => {
+const dumpMetaInfo = ({ targetShaderPath, timestamp }: SetupParam) => {
   const { day, tag, title: titleText } = getMetaFromComment(targetShaderPath);
   const dayText = day && `Day ${day}`;
-  const tagText = tag && `${tag.map((t) => `#${t}`).join(" ")}`;
+  const tagText = tag && `${tag.map((t: string) => `#${t}`).join(" ")}`;
   const text = [dayText, titleText, tagText].filter((t) => !!t).join("\n\n");
   const log = `----------------
 
@@ -166,16 +151,16 @@ ${text}
   return text;
 };
 
-const openFolder = ({ timestamp }) => {
+const openFolder = ({ timestamp }: SetupParam) => {
   const openpath = path.resolve(movieOutputPath, `${timestamp}`);
-  open(openpath);
+  openNpm(openpath);
 };
 
 const main = () => {
   // setup
   const params = setup();
   // exec
-  execProcessing();
+  execProcessing(params);
   // encoding
   execEncoding(params);
   // meta
