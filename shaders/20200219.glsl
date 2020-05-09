@@ -1,3 +1,10 @@
+uniform vec2 resolution;
+uniform float time;
+uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
+
 const mat2 myt = mat2(.12121212, .13131313, -.13131313, .12121212);
 const vec2 mys = vec2(1e4, 1e6);
 
@@ -56,9 +63,9 @@ float fbm(vec3 x) {
 	return v;
 }
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
+void main()
 {
-    vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.y;
+    vec2 uv = (gl_FragCoord.xy-.5*iResolution.xy)/iResolution.y;
     vec3 col = vec3(0.);
     
     float z = 16.;
@@ -70,8 +77,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float r = .4;
     m = smoothstep(r,r+.01,m);
     col.r = m;
-
-
     
-    fragColor = vec4(col,1.0);
+    gl_FragColor = vec4(col,1.0);
 }

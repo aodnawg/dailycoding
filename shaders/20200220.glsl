@@ -1,3 +1,11 @@
+uniform vec2 resolution;
+uniform float time;
+uniform vec2 mouse;
+
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
+
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
 vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
@@ -108,9 +116,9 @@ void march(out vec3 hitPos, out float step, in vec3 ro, in vec3 rd) {
     }
 }
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
+void main()
 {
-    vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.y;
+    vec2 uv = (gl_FragCoord.xy-.5*iResolution.xy)/iResolution.y;
     vec3 col = vec3(1.);
 
     vec3 ro,rd;
@@ -124,5 +132,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float m = pow(step, 2.);
     col = vec3(m);
     
-    fragColor = vec4(col,1.0);
+    gl_FragColor = vec4(col,1.0);
 }

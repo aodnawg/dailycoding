@@ -1,0 +1,82 @@
+<template>
+  <n-link :to="`/detail/${name}`">
+    <div v-bind:class="{ 'item--loading': !isIntersected }" class="item" ref="itemRef">
+      <Canvas v-if="isIntersected" v-bind="{shader, name }" />
+      <p v-if="!isIntersected">loading ...</p>
+    </div>
+  </n-link>
+</template>
+
+<style scoped>
+@keyframes Flash1 {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.item {
+  /* アニメーション */
+
+  width: 35vw;
+  height: 35vw;
+  margin: 8px;
+  background-color: #eeeeee;
+  display: flex;
+}
+
+.item--loading {
+  animation: Flash1 1s infinite;
+}
+</style>
+
+<script lang="ts">
+import { Vue, Component, Prop } from 'vue-property-decorator'
+import * as THREE from 'three'
+import { run } from '../Canvas/three'
+import Canvas from '~/components/Canvas/Canvas.vue'
+
+@Component({
+  components: { Canvas }
+})
+export default class ListItem extends Vue {
+  @Prop({ type: String, required: true }) readonly shader!: string
+  @Prop({ type: String, required: true }) readonly name!: string
+  private isIntersected: boolean = false
+
+  mounted() {
+    const options = {
+      root: null,
+      rootMargin: '-100px 0px -100px 0px',
+      threshold: 0.1
+    }
+    let prev
+    const callback: IntersectionObserverCallback = (entries) => {
+      console.log('isIntersecting', entries[0].isIntersecting)
+
+      if (entries[0].isIntersecting) {
+        // console.log(this.name, true)
+        this.isIntersected = true
+      } else {
+        // console.log(this.name, false)
+        this.isIntersected = false
+      }
+
+      // if (entries[0].intersectionRatio > 0) {
+      //   // console.log(this.name, true)
+      //   this.isIntersected = true
+      // } else {
+      //   // console.log(this.name, false)
+      //   this.isIntersected = false
+      // }
+    }
+    const observer = new IntersectionObserver(callback, options)
+    observer.observe(this.$refs.itemRef as HTMLDivElement)
+  }
+
+  create() {
+    document.addEventListener('scroll', () => {})
+  }
+}
+</script>

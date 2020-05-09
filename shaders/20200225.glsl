@@ -1,3 +1,10 @@
+uniform vec2 resolution;
+uniform float time;
+uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
+
 #define LOOP_MAX 1000
 #define MAX_DIST 1000.
 #define MIN_SURF .0001
@@ -175,8 +182,8 @@ vec3 getSNormal(vec3 p){
     ));
 }
 
-void mainImage(out vec4 fragColor, in vec2 flragCoord) {
-    vec2 uv = (flragCoord-.5*iResolution.xy)/iResolution.y;
+void main() {
+    vec2 uv = (gl_FragCoord.xy-.5*iResolution.xy)/iResolution.y;
     vec3 col = vec3(0.);
     float s = iTime * .1;
 
@@ -198,8 +205,6 @@ void mainImage(out vec4 fragColor, in vec2 flragCoord) {
     }
 
     col += vec3(trace(cam.ro, cam.rd).s)*.1;
-    
 
-
-    fragColor = vec4(col, 1.);
+    gl_FragColor = vec4(col, 1.);
 }

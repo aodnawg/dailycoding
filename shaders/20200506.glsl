@@ -83,34 +83,6 @@ float map(vec3 p) {
 }
 
 void main(void) {
-  vec2 uv = (gl_FragCoord.xy-.5*resolution.xy)/resolution.y;
-  float s = time*3.;
-  vec3 ro = vec3(0.,0.,0.);
-  vec3 lookat = ro + vec3(0., 0., -.3);
-
-  // initialize
-  vec3 rd = makeRay(ro, lookat, uv);
-  vec3 col = vec3(0.);
-  float t = 0.;
-  vec3 p;
-  vec3 c = vec3(0.), cv = vec3(.43, .32, .36); 
-
-  // ray march
-  for(int i = 0; i <= MAX_LOOP; i++) {
-    p = ro+rd*t;
-    float d = map(p);
-    d = max(MIN_SURF+0.001, abs(d));
-    if(t > MAX_DIST) {
-      break;
-    }
-
-    cv = vec3(noise(p*2.), noise(p*10.), noise(p*3.))*vec3(.55,.51, .54);
-    c += cv/max(1., t*4.5);
-    t += d;
-  }
-
-  col = c/1.4;
-  col = pow(col, vec3(2.3,2.1,1.6)*2.5);
-
-  gl_FragColor = vec4(col, 1.);
+  vec2 uv = gl_FragCoord.xy/resolution.xy;
+  gl_FragColor = vec4(uv, 0., 1.);
 }

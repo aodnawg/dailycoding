@@ -2,6 +2,10 @@ precision highp float;
 
 uniform vec2 resolution;
 uniform float time;
+uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
 
 #define MIN_SURF 0.0001
 #define MAX_DIST 100.
@@ -145,8 +149,8 @@ float traceSea(in vec3 ro, in vec3 rd, out bool isHit) {
   return t;
 }
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  vec2 uv = (fragCoord.xy-.5*iResolution.xy)/iResolution.y;
+void main() {
+  vec2 uv = (gl_FragCoord.xy-.5*iResolution.xy)/iResolution.y;
   float cs = iTime * .1;
   vec3 ro = vec3(cos(cs), 0., sin(cs))*(15.+sin(cs*3.)*3.)+vec3(0,1,0);
   vec3 rd = makeRay(ro, uv);
@@ -209,5 +213,5 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     pow(col.b, pw)
   );
 
-  fragColor = vec4(col, 1.);
+  gl_FragColor = vec4(col, 1.);
 }

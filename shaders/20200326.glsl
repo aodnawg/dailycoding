@@ -3,6 +3,9 @@ precision highp float;
 uniform vec2 resolution;
 uniform float time;
 uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
 
 #define MIN_SURF 0.00001
 #define MAX_DIST 300.

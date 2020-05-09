@@ -1,3 +1,10 @@
+uniform vec2 resolution;
+uniform float time;
+uniform vec2 mouse;
+#define iResolution resolution
+#define iTime time
+#define iMouse mouse
+
 #define PI 3.141593
 
 precision highp float;
@@ -184,9 +191,9 @@ vec3 GetNormal(vec3 p) {
 
 
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
+void main()
 {
-    vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.y;
+    vec2 uv = (gl_FragCoord.xy-.5*iResolution.xy)/iResolution.y;
     vec3 col = vec3(0.);
 
     vec3 ro,rd;
@@ -205,5 +212,5 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     col += vec3(1.)*light*4.;
 
-    fragColor = vec4(col,1.0);
+    gl_FragColor = vec4(col,1.0);
 }
