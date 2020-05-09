@@ -2,6 +2,7 @@
 **/*.mp4
 out/
 node_modules/
-Shader/data/
+Shader/data/**/*
+!Shader/data/**/.gitkeep
 Shader/thumbnail/
 Shader/sequence/
