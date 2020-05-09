@@ -18,7 +18,11 @@ const removePrefix = (prefixes: string[], comment: string) => {
   return comment.replace(new RegExp(`^// @(${prefixes.join("|")}) `), "");
 };
 
-const getMeta = (prefixes: string[], shaderText: string, target: string) => {
+const getMetaFromText = (
+  prefixes: string[],
+  shaderText: string,
+  target: string
+) => {
   assert(prefixes.includes(target), "[*] error: invalid prefix");
   const regexpInput = `^// @(${target}) (.*)$`;
   const regex = new RegExp(regexpInput, "gm");
@@ -32,11 +36,22 @@ const getMeta = (prefixes: string[], shaderText: string, target: string) => {
 
 const parseTag = (tagRawText: string) => tagRawText.split(",");
 
-export const getMetaFromComment = (filePath: string) => {
-  const shaderText = getShaderText(filePath);
+type getMetaParam = {
+  filePath?: string;
+  shaderText?: string;
+};
+
+export const getMeta = ({
+  filePath,
+  shaderText: shaderText_,
+}: getMetaParam) => {
+  if (!shaderText_ && !filePath) {
+    return {};
+  }
+  const shaderText = shaderText_ || getShaderText(filePath!);
   const prefixes = ["day", "tag", "title"];
   const [day, tag_, title] = prefixes.map((prefix) =>
-    getMeta(prefixes, shaderText, prefix)
+    getMetaFromText(prefixes, shaderText, prefix)
   );
   return { day, tag: tag_ && parseTag(tag_), title };
 };

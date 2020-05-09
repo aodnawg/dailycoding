@@ -17,7 +17,7 @@ const {
   thumbnailImagePath,
 } = pathData;
 
-import { getMetaFromComment } from "./getMetaFromComment";
+import { getMeta } from "./getMeta";
 
 const getTimestamp = () => new Date().getTime();
 
@@ -146,8 +146,12 @@ export const execEncoding = ({
   return true;
 };
 
-export const dumpMetaInfo = ({ targetShaderPath, timestamp }: SetupParam) => {
-  const { day, tag, title: titleText } = getMetaFromComment(targetShaderPath);
+export const dumpMetaInfo = ({
+  targetShaderPath: filePath,
+  timestamp,
+}: SetupParam) => {
+  const result = getMeta({ filePath });
+  const { day, tag, title: titleText } = result;
   const dayText = day && `Day ${day}`;
   const tagText = tag && `${tag.map((t: string) => `#${t}`).join(" ")}`;
   const text = [dayText, titleText, tagText].filter((t) => !!t).join("\n\n");

@@ -4,6 +4,7 @@
   "description": "- shaders that I write everyday.\r - the codes are shared at instagram, shadertoy and more.\r - check my sns accounts below.\r   - [instagram](https://www.instagram.com/aodnawg/)\r   - [neort](https://neort.io/9PPUYunxKiZJW651hpCtwdIekyu1)\r   - [shadertoy](https://www.shadertoy.com/user/aodnawg)",
   "main": "index.js",
   "scripts": {
+    "export": "ts-node ./script/export.ts",
     "make:movie": "ts-node ./script/makeMovie.ts",
     "make:thumbnail": "ts-node ./script/makeThumbnail.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,6 +20,7 @@
   },
   "homepage": "https://github.com/aodnawg/dailycoding#readme",
   "devDependencies": {
+    "@types/lodash": "^4.14.150",
     "@types/node": "^13.13.5",
     "@types/open": "^6.2.1",
     "express": "^4.17.1",

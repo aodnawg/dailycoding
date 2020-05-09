@@ -27,6 +27,8 @@ export const pathData = {
   thumbnailImagePath: path.resolve(processingSketchPath, "thumbnail"),
   /** ffmpeg movie out put file */
   movieOutputPath: path.resolve(projectRootPath, "out"),
+  /** nuxt shader path */
+  shaderWebPath: path.resolve(projectRootPath, "web", "shaders"),
 };
 
 export const encoding = "utf-8";

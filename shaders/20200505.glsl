@@ -83,7 +83,7 @@ float map(vec3 p) {
     p.yz *= rot(40.);
     p.xz *= rot(40.);
     r = min(r, grid(p*(1.+b*5.), 0.01));
-    
+
     b += .35;
   }
   return r;
@@ -100,7 +100,7 @@ void main(void) {
   vec3 col = vec3(0.);
   float t = 0.;
   vec3 p;
-  vec3 c = vec3(0.), cv = vec3(.43, .32, .56); 
+  vec3 c = vec3(0.), cv = vec3(.43, .32, .56);
 
   // ray march
   for(int i = 0; i <= MAX_LOOP; i++) {
