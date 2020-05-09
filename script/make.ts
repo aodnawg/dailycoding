@@ -19,6 +19,8 @@ const {
 
 import { getMeta } from "./getMeta";
 
+const ThumbnailSize = 512; // TODO: move setting
+
 const getTimestamp = () => new Date().getTime();
 
 const checkTargetShader = (targetShaderPath: string) => {
@@ -65,22 +67,45 @@ interface SetupParam extends Setting {
   targetShaderPath: string;
   targetShaderName: string;
 }
-export const setup = (mode: MakeMode, filePath?: string): SetupParam => {
-  const setting = loadSetting();
 
-  const targetShaderName = filePath || getNewestShaderFileName();
-  const targetShaderPath = path.resolve(shaderSourcePath, targetShaderName);
-  console.log(`[*] setup ${targetShaderPath}`);
-  checkTargetShader(targetShaderPath);
-  copyTargetShader(targetShaderName);
+const makeSetupParam = (
+  mode: MakeMode,
+  targetShaderName: string,
+  targetShaderPath: string,
+  { width: width_, height: height_, ...rest }: Setting
+): SetupParam => {
   const timestamp = getTimestamp();
-  const params = {
+
+  const width = mode === MakeMode.Movie ? width_ : ThumbnailSize;
+  const height = mode === MakeMode.Movie ? height_ : ThumbnailSize;
+
+  return {
     mode,
     timestamp,
-    targetShaderPath,
     targetShaderName,
-    ...setting,
+    targetShaderPath,
+    width,
+    height,
+    ...rest,
   };
+};
+
+export const setup = (mode: MakeMode, fileName?: string): SetupParam => {
+  const setting = loadSetting();
+
+  const targetShaderName = fileName || getNewestShaderFileName();
+  const targetShaderPath = path.resolve(shaderSourcePath, targetShaderName);
+  console.log(`[*] setup ${targetShaderPath}`);
+
+  checkTargetShader(targetShaderPath);
+  copyTargetShader(targetShaderName);
+
+  const params = makeSetupParam(
+    mode,
+    targetShaderName,
+    targetShaderPath,
+    setting
+  );
 
   return params;
 };
@@ -182,4 +207,12 @@ export const openFolder = ({
       ? path.resolve(movieOutputPath, `${timestamp}`)
       : path.resolve(thumbnailImagePath, targetShaderName.replace(/.glsl/, ""));
   openNpm(dirPath);
+};
+
+export const makeThumbnail = (fileName?: string) => {
+  // setup
+  const params = setup(MakeMode.Thumbnail, fileName);
+  // exec
+  execProcessing(params);
+  return params;
 };

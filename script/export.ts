@@ -2,22 +2,14 @@ import fs from "fs";
 import path from "path";
 import _ from "lodash";
 
-import { pathData, encoding } from "./common";
+import { pathData, encoding, listup, glslExt } from "./common";
 import { getMeta } from "./getMeta";
 
 // path
 const { shaderSourcePath, shaderWebPath } = pathData;
 
 // const
-const glslExt = /\.glsl$/g;
 const listJsonName = "list.json";
-
-const listup = () => {
-  const list = fs
-    .readdirSync(shaderSourcePath)
-    .filter((name) => name.match(glslExt) !== null);
-  return list;
-};
 
 const makeListJson = (list_: string[]) => {
   const list = list_.map((name) => name.replace(glslExt, ""));

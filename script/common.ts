@@ -29,6 +29,8 @@ export const pathData = {
   movieOutputPath: path.resolve(projectRootPath, "out"),
   /** nuxt shader path */
   shaderWebPath: path.resolve(projectRootPath, "web", "shaders"),
+  /** nuxt asset path */
+  webAssetPath: path.resolve(projectRootPath, "web", "assets"),
 };
 
 export const encoding = "utf-8";
@@ -43,3 +45,12 @@ export const getNewestShaderFileName = (): string =>
           .mtime.getTime() -
         fs.statSync(path.resolve(pathData.shaderSourcePath, a)).mtime.getTime()
     )[0];
+
+export const glslExt = /\.glsl$/g;
+
+export const listup = () => {
+  const list = fs
+    .readdirSync(pathData.shaderSourcePath)
+    .filter((name) => name.match(glslExt) !== null);
+  return list;
+};

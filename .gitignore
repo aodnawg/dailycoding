@@ -6,3 +6,4 @@ Shader/data/**/*
 !Shader/data/**/.gitkeep
 Shader/thumbnail/
 Shader/sequence/
+web/assets/thumbnail/**/*
