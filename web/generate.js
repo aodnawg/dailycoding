@@ -1,4 +1,4 @@
-const meta = require('./shaders/meta.json')
+const meta = require('./shaders/list.json')
 const list = meta.list
 
 const generate = {

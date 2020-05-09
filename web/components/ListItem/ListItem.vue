@@ -1,7 +1,11 @@
 <template>
   <n-link :to="`/detail/${name}`">
-    <div v-bind:class="{ 'item--loading': !isIntersected }" class="item" ref="itemRef">
-      <Canvas v-if="isIntersected" v-bind="{shader, name }" />
+    <div
+      ref="itemRef"
+      :class="{ 'item--loading': !isIntersected }"
+      class="item"
+    >
+      <Canvas v-if="isIntersected" v-bind="{ shader, name }" />
       <p v-if="!isIntersected">loading ...</p>
     </div>
   </n-link>

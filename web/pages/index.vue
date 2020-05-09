@@ -2,7 +2,7 @@
   <div class="row">
     <div class="main__list-wrap">
       <div v-for="item in list" :key="item.name" class="main__list-item">
-        <ListItem v-bind="{name: item.name, shader: item.shader}" />
+        <ListItem v-bind="{ name: item.name, shader: item.shader }" />
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@ import Canvas from '~/components/Canvas/Canvas.vue'
 import ListItem from '~/components/ListItem/ListItem.vue'
 
 const asyncData = async ({ params }: any) => {
-  const metaData = require('../shaders/meta.json')
+  const metaData = require('../shaders/list.json')
   const jsonData = require('../shaders/20200303.json')
 
   const list = metaData.list.map((name: string) => ({
@@ -48,7 +48,7 @@ const asyncData = async ({ params }: any) => {
 }
 
 export default Vue.extend({
-  asyncData,
-  components: { Canvas, ListItem }
+  components: { Canvas, ListItem },
+  asyncData
 })
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <DetailView v-bind:shader="source" v-bind:name="name" />
+    <DetailView :shader="source" :name="name" />
   </div>
 </template>
 
@@ -14,17 +14,17 @@
 </style>
 
 <script lang="ts">
-import DetailView from '~/components/DetailView/DetailView.vue'
 import { Vue, Component, Prop } from 'vue-property-decorator'
+import DetailView from '~/components/DetailView/DetailView.vue'
 
 const asyncData = async ({ params }: any) => {
-  const metaData = require('../../shaders/meta.json')
+  const metaData = require('../../shaders/list.json')
   const jsonData = require(`../../shaders/${params.name}.json`)
   return { source: jsonData.body, title: 'haga', name: params.name }
 }
 
 export default {
-  asyncData,
-  components: { DetailView }
+  components: { DetailView },
+  asyncData
 }
 </script>

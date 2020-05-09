@@ -1,6 +1,10 @@
 <template>
   <div>
-    <nav class="navbar header has-shadow" role="navigation" aria-label="main navigation">
+    <nav
+      class="navbar header has-shadow"
+      role="navigation"
+      aria-label="main navigation"
+    >
       <div class="logo">
         <p>
           <nuxt-link to="/">aodnawg</nuxt-link>

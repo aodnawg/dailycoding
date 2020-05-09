@@ -40,7 +40,7 @@ const throttle = (fn: Function, delay: number) => {
   let timerId: any
   let lastExecTime = 0
   return () => {
-    let elapsedTime = performance.now() - lastExecTime
+    const elapsedTime = performance.now() - lastExecTime
     const execute = () => {
       fn()
       lastExecTime = performance.now()

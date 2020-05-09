@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2>{{name}}</h2>
-    <Canvas v-bind="{shader, name }" />
+    <h2>{{ name }}</h2>
+    <Canvas v-bind="{ shader, name }" />
     <code class="code">{{ shader }}</code>
   </div>
 </template>
