@@ -4,6 +4,7 @@
   "description": "- shaders that I write everyday.\r - the codes are shared at instagram, shadertoy and more.\r - check my sns accounts below.\r   - [instagram](https://www.instagram.com/aodnawg/)\r   - [neort](https://neort.io/9PPUYunxKiZJW651hpCtwdIekyu1)\r   - [shadertoy](https://www.shadertoy.com/user/aodnawg)",
   "main": "index.js",
   "scripts": {
+    "build": "cd web && npm install && npm run build",
     "export": "npm run export:json && npm run export:thumbnail",
     "export:json": "ts-node ./script/export.ts",
     "export:thumbnail": "ts-node ./script/exportThumbnail.ts",
