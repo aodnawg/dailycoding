@@ -5,13 +5,12 @@
       :class="{ 'item--loading': !isIntersected }"
       class="item"
     >
-      <Canvas v-if="isIntersected" v-bind="{ shader, name }" />
-      <p v-if="!isIntersected">loading ...</p>
+      <img class="thumnail-img" v-bind:src="imagePath" />
     </div>
   </n-link>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 @keyframes Flash1 {
   0% {
     opacity: 0.5;
@@ -21,17 +20,13 @@
   }
 }
 .item {
-  /* アニメーション */
+  width: 100%;
+  height: auto;
+  background: #eeeeee;
 
-  width: 35vw;
-  height: 35vw;
-  margin: 8px;
-  background-color: #eeeeee;
-  display: flex;
-}
-
-.item--loading {
-  animation: Flash1 1s infinite;
+  &--loading {
+    animation: Flash1 1s infinite;
+  }
 }
 </style>
 
@@ -47,12 +42,18 @@ import Canvas from '~/components/Canvas/Canvas.vue'
 export default class ListItem extends Vue {
   @Prop({ type: String, required: true }) readonly shader!: string
   @Prop({ type: String, required: true }) readonly name!: string
-  private isIntersected: boolean = false
+  public isIntersected: boolean = false
+
+  get imagePath() {
+    const name_ = this.name.replace(/\.glsl/, '')
+    return require(`~/assets/thumbnail/${name_}/0001.png`)
+  }
 
   mounted() {
+    console.log(this.imagePath)
     const options = {
       root: null,
-      rootMargin: '-100px 0px -100px 0px',
+      rootMargin: '100px 0px 100px 0px',
       threshold: 0.1
     }
     let prev
@@ -60,20 +61,10 @@ export default class ListItem extends Vue {
       console.log('isIntersecting', entries[0].isIntersecting)
 
       if (entries[0].isIntersecting) {
-        // console.log(this.name, true)
         this.isIntersected = true
       } else {
-        // console.log(this.name, false)
         this.isIntersected = false
       }
-
-      // if (entries[0].intersectionRatio > 0) {
-      //   // console.log(this.name, true)
-      //   this.isIntersected = true
-      // } else {
-      //   // console.log(this.name, false)
-      //   this.isIntersected = false
-      // }
     }
     const observer = new IntersectionObserver(callback, options)
     observer.observe(this.$refs.itemRef as HTMLDivElement)

@@ -1,16 +1,28 @@
 <template>
   <div>
-    <h2>{{ name }}</h2>
+    <h2 class="title">{{ name }}</h2>
     <Canvas v-bind="{ shader, name }" />
+    <h3 class="headline">Code</h3>
     <code class="code">{{ shader }}</code>
   </div>
 </template>
 
 <style scoped>
-h2 {
+.title {
+  color: #111111;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 900;
   font-size: 1.6rem;
   margin-top: 8px;
   margin-bottom: 16px;
+}
+
+.headline {
+  color: #111111;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 900;
+  font-size: 1.4rem;
+  margin-bottom: 8px;
 }
 
 #canvasBox {
@@ -21,16 +33,18 @@ h2 {
   max-height: 360px;
   background: gray;
   border-radius: 4px;
+  margin-bottom: 32px;
 }
 
 .code {
   background-color: #eeeeee;
   padding: 12px;
+  font-size: 1rem;
   border-radius: 4px;
   display: block;
-  margin-top: 32px;
   color: #292929;
   white-space: pre-line;
+  font-family: 'Anonymous Pro', monospace;
 }
 </style>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div>
     <div class="main__list-wrap">
       <div v-for="item in list" :key="item.name" class="main__list-item">
         <ListItem v-bind="{ name: item.name, shader: item.shader }" />
@@ -8,24 +8,24 @@
   </div>
 </template>
 
-<style scope>
-.placeholder {
-  height: 1800px;
-  background-color: yellow;
-}
-
-.row {
-  margin: 0 16px;
-}
+<style scope lang="scss">
 #code {
   white-space: pre-wrap;
 }
 
 .main__list-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  margin: -8px;
-  justify-content: center;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-auto-rows: auto;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 </style>
 
