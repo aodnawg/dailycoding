@@ -7,14 +7,6 @@ export const run = (
   shader: string,
   hash?: number
 ) => {
-  //   let container
-  //   let camera, scene, renderer
-  //   let uniforms
-
-  //   init()
-
-  // container = document.getElementById('container')
-
   const camera = new THREE.Camera()
   camera.position.z = 1
 
@@ -43,18 +35,17 @@ export const run = (
   // const renderer = new THREE.WebGLRenderer()
   renderer.setPixelRatio(window.devicePixelRatio)
 
-  container.appendChild(renderer.domElement)
-
   const onWindowResize = () => {
-    console.log(container, container.clientWidth, container.clientHeight)
+    console.log(container.clientWidth, container.clientHeight)
     renderer.setSize(container.clientWidth, container.clientHeight)
-    uniforms.resolution.value.x = container.clientWidth
-    uniforms.resolution.value.y = container.clientHeight
-    uniforms.iResolution.value.x = container.clientWidth
-    uniforms.iResolution.value.y = container.clientHeight
+    uniforms.resolution.value.x = renderer.domElement.width
+    uniforms.resolution.value.y = renderer.domElement.height
+    uniforms.iResolution.value.x = renderer.domElement.width
+    uniforms.iResolution.value.y = renderer.domElement.height
   }
   onWindowResize()
   window.addEventListener('resize', onWindowResize, false)
+  container.appendChild(renderer.domElement)
 
   document.onmousemove = function(e) {
     uniforms.mouse.value.x = e.pageX

@@ -51,6 +51,13 @@ export const glslExt = /\.glsl$/g;
 export const listup = () => {
   const list = fs
     .readdirSync(pathData.shaderSourcePath)
-    .filter((name) => name.match(glslExt) !== null);
+    .filter((name) => name.match(glslExt) !== null)
+    .sort(
+      (a: string, b: string) =>
+        fs
+          .statSync(path.resolve(pathData.shaderSourcePath, b))
+          .mtime.getTime() -
+        fs.statSync(path.resolve(pathData.shaderSourcePath, a)).mtime.getTime()
+    );
   return list;
 };

@@ -75,7 +75,6 @@ export default class Canvas extends Vue {
   }
 
   mounted() {
-    console.log(this.hash)
     this.renderer = new THREE.WebGLRenderer()
 
     const { render } = run(
@@ -92,19 +91,5 @@ export default class Canvas extends Vue {
   destroy() {
     clearInterval(this.timerId)
   }
-
-  //   get source() {
-  //     return this.shader;
-  //   }
 }
-
-// export default Vue.extend({
-//   props: {
-//     shader: {
-//       type: Object,
-//       required: true
-//     } as PropOptions<Shader>
-//   }
-// })
-//
 </script>
