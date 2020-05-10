@@ -1,10 +1,6 @@
 <template>
   <n-link :to="`/detail/${name}`">
-    <div
-      ref="itemRef"
-      :class="{ 'item--loading': !isIntersected }"
-      class="item"
-    >
+    <div ref="itemRef" :class="{ 'item--loading': !isIntersected }" class="item">
       <img class="thumnail-img" v-bind:src="imagePath" />
     </div>
   </n-link>
@@ -21,8 +17,10 @@
 }
 .item {
   width: 100%;
+  padding-top: 100%;
   height: auto;
   background: #eeeeee;
+  position: relative;
 
   &--loading {
     animation: Flash1 1s infinite;
@@ -30,6 +28,9 @@
 
   img {
     vertical-align: top;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 }
 </style>
