@@ -3,7 +3,7 @@ import fs from "fs";
 import assert from "assert";
 import _ from "lodash";
 import { makeThumbnail } from "./make";
-import { listup, pathData } from "./common";
+import { listup, pathData, getNewestShaderFileName } from "./common";
 
 const { thumbnailImagePath, webAssetPath } = pathData;
 
@@ -78,9 +78,20 @@ const exportThumnbnailAll = (targetList: string[]) => {
   targetList.forEach((t) => exportThumnbnailPerGlsl(t));
 };
 
-const main = () => {
+const exportAll = () => {
   const targetList = listup();
   makeThumbnailAll(targetList);
   exportThumnbnailAll(targetList);
+};
+
+const exportNewest = () => {
+  const targetName = getNewestShaderFileName();
+  makeThumbnail(targetName);
+  exportThumnbnailPerGlsl(targetName);
+};
+
+const main = () => {
+  // exportAll();
+  exportNewest();
 };
 main();

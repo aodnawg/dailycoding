@@ -2,7 +2,13 @@ import fs from "fs";
 import path from "path";
 import _ from "lodash";
 
-import { pathData, encoding, listup, glslExt } from "./common";
+import {
+  pathData,
+  encoding,
+  listup,
+  glslExt,
+  getNewestShaderFileName,
+} from "./common";
 import { getMeta } from "./getMeta";
 
 // path
@@ -25,35 +31,59 @@ const modifyShaderText = (shaderText: string) => {
   return shaderText.replace(/\r/g, "").replace(/\n/g, "\n");
 };
 
-const makeDetailPageMap = (list: string[]) => {
-  const result = list
-    .map((name) => path.resolve(shaderSourcePath, name))
-    .map((d) => readShaderText(d))
-    .map((d) => modifyShaderText(d))
-    .map((d) => ({ meta: getMeta({ shaderText: d }), body: d }));
+const makeDetailPageMap = (glslName: string) => {
+  const pathData = path.resolve(shaderSourcePath, glslName);
+  const shaderTextRaw = readShaderText(pathData);
+  const shaderText = modifyShaderText(shaderTextRaw);
+  return { meta: getMeta({ shaderText }), body: shaderText };
+};
+
+const makeDetailPageMapfromList = (list: string[]) => {
+  const result = list.map((name) => makeDetailPageMap(name));
   return result;
 };
 
-const exportFile = (list: string[]) => {
-  const d = makeDetailPageMap(list);
-  _.zip(d, list).forEach(([d, name]) => {
-    fs.writeFile(
-      path.resolve(shaderWebPath, name!.replace(glslExt, ".json")),
-      JSON.stringify(d),
-      () => {
-        console.log(`done ${name}`);
-      }
-    );
+const moveFile = (mapData: object, glslName: string) => {
+  fs.writeFile(
+    path.resolve(shaderWebPath, glslName.replace(glslExt, ".json")),
+    JSON.stringify(mapData),
+    () => {
+      console.log(`done ${glslName}`);
+    }
+  );
+};
+
+const moveFileList = (list: string[]) => {
+  const maps = makeDetailPageMapfromList(list);
+  _.zip(maps, list).forEach(([mapData, glslName]) => {
+    moveFile(mapData!, glslName!);
   });
 };
 
-const main = () => {
+const exportJson = () => {
   const list = listup();
-  const meta = makeListJson(list);
-  fs.writeFileSync(path.resolve(shaderWebPath, listJsonName), meta, {
+  const listMap = makeListJson(list);
+  fs.writeFileSync(path.resolve(shaderWebPath, listJsonName), listMap, {
+    encoding,
+  });
+  const targetName = getNewestShaderFileName();
+  const map = makeDetailPageMap(targetName);
+  moveFile(map, targetName);
+};
+
+const exportJsonAll = () => {
+  const list = listup();
+  const listMap = makeListJson(list);
+  fs.writeFileSync(path.resolve(shaderWebPath, listJsonName), listMap, {
     encoding,
   });
 
-  const d = exportFile(list);
+  moveFileList(list);
 };
+
+const main = () => {
+  exportJson();
+  // exportJsonAll();
+};
+
 main();
