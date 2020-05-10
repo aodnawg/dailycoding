@@ -1,6 +1,6 @@
 {
-  "width": 200,
-  "height": 200,
-  "totalTime": 1,
-  "frameRate": 12
+  "width": 1024,
+  "height": 1024,
+  "totalTime": 30,
+  "frameRate": 30
 }
