@@ -46,7 +46,7 @@ void draw() {
 }
 
 void makeThumbnail() {
-  if(frameCount > 5) {
+  if(frameCount > 1) {
     noLoop();
     println("[*] finished!");
     exit();

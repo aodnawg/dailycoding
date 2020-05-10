@@ -81,6 +81,6 @@ const exportThumnbnailAll = (targetList: string[]) => {
 const main = () => {
   const targetList = listup();
   makeThumbnailAll(targetList);
-  // exportThumnbnailAll(targetList);
+  exportThumnbnailAll(targetList);
 };
 main();

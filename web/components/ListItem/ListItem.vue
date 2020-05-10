@@ -27,6 +27,10 @@
   &--loading {
     animation: Flash1 1s infinite;
   }
+
+  img {
+    vertical-align: top;
+  }
 }
 </style>
 
@@ -58,8 +62,6 @@ export default class ListItem extends Vue {
     }
     let prev
     const callback: IntersectionObserverCallback = (entries) => {
-      console.log('isIntersecting', entries[0].isIntersecting)
-
       if (entries[0].isIntersecting) {
         this.isIntersected = true
       } else {
