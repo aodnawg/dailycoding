@@ -1,63 +1,47 @@
 <template>
-  <!-- <div> -->
-  <!-- <h2>{{name}}</h2> -->
-  <div id="canvasBox" ref="canvasRef" />
-  <!-- <code class="code">{{ shader }}</code> -->
-  <!-- </div> -->
+  <div class="wrap">
+    <div id="canvasBox" ref="canvasRef" />
+    <button v-on:click="rerender" class="rerender-button">
+      Rerender
+      <fa :icon="faSync" />
+    </button>
+  </div>
 </template>
 
 <style scoped>
-h2 {
-  font-size: 1.6rem;
-  margin-top: 8px;
-  margin-bottom: 16px;
+.wrap {
+  margin-bottom: 64px;
 }
 
 #canvasBox {
   width: 100%;
-  height: 100%;
+  height: 400px;
+  margin-bottom: 32px;
 }
 
-.code {
-  background-color: #eeeeee;
-  padding: 12px;
-  border-radius: 4px;
-  display: block;
-  margin-top: 32px;
-  color: #292929;
-  white-space: pre-line;
+.rerender-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  appearance: none;
+  background-color: #111111;
+  color: #ffffff;
+  padding: 8px 16px;
+  font-size: 1.4rem;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 900;
 }
 </style>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import * as THREE from 'three'
+import { faSync } from '@fortawesome/free-solid-svg-icons'
 import { run } from './three'
 
 const makeHash = () => Math.random() * 10000
-
-const throttle = (fn: Function, delay: number) => {
-  let timerId: any
-  let lastExecTime = 0
-  return () => {
-    const elapsedTime = performance.now() - lastExecTime
-    const execute = () => {
-      fn()
-      lastExecTime = performance.now()
-    }
-    if (!timerId) {
-      execute()
-    }
-    if (timerId) {
-      clearTimeout(timerId)
-    }
-    if (elapsedTime > delay) {
-      execute()
-    } else {
-      timerId = setTimeout(execute, delay)
-    }
-  }
-}
 
 @Component
 export default class Canvas extends Vue {
@@ -83,13 +67,19 @@ export default class Canvas extends Vue {
       this.shader,
       this.hash || 0
     )
-    this.render = render
-
-    this.timerId = setInterval(() => render(makeHash()), 2000)
+    this.render = () => render(makeHash())
   }
 
   destroy() {
     clearInterval(this.timerId)
+  }
+
+  rerender() {
+    this.render()
+  }
+
+  get faSync() {
+    return faSync
   }
 }
 </script>
