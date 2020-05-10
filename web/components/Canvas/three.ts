@@ -61,7 +61,11 @@ export const run = (
   }
   animate()
 
-  function render() {
+  function render(hash?: number) {
+    if (hash) {
+      uniforms.time.value = hash
+      uniforms.iTime.value = hash
+    }
     uniforms.time.value += 0.05
     uniforms.iTime.value += 0.05
     renderer.render(scene, camera)

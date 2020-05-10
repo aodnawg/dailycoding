@@ -34,7 +34,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import * as THREE from 'three'
 import { run } from './three'
 
-const makeHash = () => Math.random() * 1000
+const makeHash = () => Math.random() * 10000
 
 const throttle = (fn: Function, delay: number) => {
   let timerId: any
@@ -85,7 +85,7 @@ export default class Canvas extends Vue {
     )
     this.render = render
 
-    this.timerId = setInterval(render, 1000)
+    this.timerId = setInterval(() => render(makeHash()), 2000)
   }
 
   destroy() {
