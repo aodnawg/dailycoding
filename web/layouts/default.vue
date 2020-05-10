@@ -1,51 +1,85 @@
 <template>
   <div class="frame">
-    <div class="logo-wrap">
+    <header id="header">
       <nuxt-link to="/" class="link">
-        <h1 class="logo">
-          aodnawg
-        </h1>
-        <h2 class="headline">glsl works.</h2>
+        <div class="logo-wrap">
+          <h1 class="logo">
+            aodnawg
+          </h1>
+          <h2 class="headline">glsl works.</h2>
+        </div>
       </nuxt-link>
-    </div>
-    <section>
+      <div class="social">
+        <a href="https://www.instagram.com/aodnawg/" target="_blank"
+          ><fa :icon="faInstagram"
+        /></a>
+        <a href="https://twitter.com/aodnawg" target="_blank"
+          ><fa :icon="faTwitter"
+        /></a>
+      </div>
+    </header>
+
+    <section class="main">
       <nuxt />
     </section>
   </div>
 </template>
 
 <style scoped lang="scss">
+#header {
+  color: #111111;
+  a {
+    color: #111111;
+  }
+
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 16px;
+  }
+}
+
+.main {
+  @media (max-width: 768px) {
+    margin: 64px 16px 0;
+  }
+}
+
 .frame {
   display: grid;
-  margin: 32px auto;
   width: 1168px;
   grid-template-columns: 1fr 3fr;
   gap: 32px;
+  margin: 48px auto;
 
   @media (max-width: 1200px) {
-    width: 100%;
+    width: auto;
     display: grid;
-    margin: 32px;
-    grid-template-columns: 1fr 3fr;
-    gap: 32px;
+    margin: 48px 32px;
   }
 
   @media (max-width: 768px) {
     display: flex;
     flex-direction: column;
-    margin: 0 16px;
+    /* margin: 0 16px; */
+    margin: 0;
   }
 }
 
 .logo-wrap {
-  color: #111111;
-  a {
-    color: #111111;
-  }
+  margin-bottom: 32px;
+
   @media (max-width: 768px) {
+    margin-bottom: 0;
+
     display: flex;
     align-items: baseline;
-    margin-bottom: 32px;
   }
 }
 
@@ -55,7 +89,8 @@
   font-weight: 900;
 
   @media (max-width: 768px) {
-    margin-right: 16px;
+    font-size: 2rem;
+    margin-right: 8px;
   }
 }
 
@@ -63,7 +98,32 @@
   font-size: 2rem;
   font-family: 'Roboto', sans-serif;
   font-weight: 200;
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+  }
+}
+
+.social {
+  font-size: 1.4rem;
+  color: #111111;
+  display: flex;
+  margin: -6px;
+  > * {
+    margin: 6px;
+  }
 }
 </style>
 
-<script></script>
+<script>
+import { faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons'
+export default {
+  computed: {
+    faInstagram() {
+      return faInstagram
+    },
+    faTwitter() {
+      return faTwitter
+    }
+  }
+}
+</script>

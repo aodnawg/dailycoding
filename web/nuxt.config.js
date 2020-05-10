@@ -55,7 +55,8 @@ export default {
    */
   modules: [
     // Doc: https://buefy.github.io/#/documentation
-    'nuxt-buefy'
+    'nuxt-buefy',
+    'nuxt-fontawesome'
   ],
   /*
    ** Build configuration
@@ -66,5 +67,16 @@ export default {
      */
     extend(config, ctx) {}
   },
-  generate
+  generate,
+  // fontawesome: {
+  //   imports: [
+  //     {
+  //       set: '@fortawesome/free-brands-svg-icons',
+  //       icons: ['faInstagram']
+  //     }
+  //   ]
+  // }
+  fontawesome: {
+    component: 'fa'
+  }
 }
