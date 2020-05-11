@@ -3,19 +3,17 @@
     <header id="header">
       <nuxt-link to="/" class="link">
         <div class="logo-wrap">
-          <h1 class="logo">
-            aodnawg
-          </h1>
+          <h1 class="logo">aodnawg</h1>
           <h2 class="headline">glsl works.</h2>
         </div>
       </nuxt-link>
       <div class="social">
-        <a href="https://www.instagram.com/aodnawg/" target="_blank"
-          ><fa :icon="faInstagram"
-        /></a>
-        <a href="https://twitter.com/aodnawg" target="_blank"
-          ><fa :icon="faTwitter"
-        /></a>
+        <a href="https://www.instagram.com/aodnawg/" target="_blank">
+          <fa :icon="faInstagram" />
+        </a>
+        <a href="https://twitter.com/aodnawg" target="_blank">
+          <fa :icon="faTwitter" />
+        </a>
       </div>
     </header>
 
@@ -74,7 +72,7 @@
 }
 
 .logo-wrap {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 
   @media (max-width: 768px) {
     margin-bottom: 0;
@@ -85,7 +83,7 @@
 }
 
 .logo {
-  font-size: 2.4rem;
+  font-size: 3rem;
   font-family: 'Roboto', sans-serif;
   font-weight: 900;
 
@@ -96,7 +94,7 @@
 }
 
 .headline {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-family: 'Roboto', sans-serif;
   font-weight: 200;
   @media (max-width: 768px) {
@@ -105,7 +103,7 @@
 }
 
 .social {
-  font-size: 1.4rem;
+  font-size: 2rem;
   color: #111111;
   display: flex;
   margin: -6px;

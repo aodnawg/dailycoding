@@ -27,6 +27,11 @@ export default {
         rel: 'stylesheet',
         href:
           'https://fonts.googleapis.com/css2?family=Anonymous+Pro&family=Roboto:wght@300;400;900&display=swap'
+      },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.2/styles/github.min.css'
       }
     ]
   },
@@ -37,7 +42,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['@/assets/global.scss'],
   /*
    ** Plugins to load before mounting the App
    */

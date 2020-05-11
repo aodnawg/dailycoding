@@ -22,6 +22,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/vue-fontawesome": "^0.1.9",
     "fs-extra": "^9.0.0",
+    "highlight.js": "^10.0.2",
     "lodash": "^4.17.15",
     "nuxt": "^2.0.0",
     "nuxt-buefy": "^0.3.2",

@@ -4,11 +4,12 @@
     <Canvas v-bind="{ shader, name }" />
     <div class="flex-headilne">
       <h3 class="headline">Code</h3>
-      <a v-bind:href="githubLink" target="_blank"
-        >see on Github <fa :icon="faGithub"
-      /></a>
+      <a v-bind:href="githubLink" target="_blank">
+        see on Github
+        <fa :icon="faGithub" />
+      </a>
     </div>
-    <code class="code">{{ shader }}</code>
+    <pre ref="codeRef" class="glsl"><code class="code">{{ shader }}</code></pre>
   </div>
 </template>
 
@@ -24,7 +25,7 @@
   color: #111111;
   font-family: 'Roboto', sans-serif;
   font-weight: 900;
-  font-size: 1.6rem;
+  font-size: 2.4rem;
   margin-top: 8px;
   margin-bottom: 16px;
 }
@@ -38,7 +39,7 @@
   color: #111111;
   font-family: 'Roboto', sans-serif;
   font-weight: 900;
-  font-size: 1.4rem;
+  font-size: 1.8rem;
   margin-bottom: 8px;
 }
 
@@ -53,13 +54,10 @@
 }
 
 .code {
-  background-color: #eeeeee;
   padding: 12px;
-  font-size: 1rem;
-  border-radius: 4px;
+  font-size: 1rem !important;
+  border-radius: 4px !important;
   display: block;
-  color: #292929;
-  white-space: pre-line;
   font-family: 'Anonymous Pro', monospace;
 }
 </style>
@@ -68,11 +66,18 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import Canvas from '~/components/Canvas/Canvas.vue'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import hljs from 'highlight.js/lib/core'
+import glsl from 'highlight.js/lib/languages/glsl'
 
 @Component({ components: { Canvas } })
 export default class DetailView extends Vue {
   @Prop({ type: String, required: true }) readonly shader!: string
   @Prop({ type: String, required: true }) readonly name!: string
+
+  mounted() {
+    hljs.registerLanguage('glsl', glsl)
+    hljs.highlightBlock(this.$refs.codeRef as HTMLDivElement)
+  }
 
   get faGithub() {
     return faGithub
