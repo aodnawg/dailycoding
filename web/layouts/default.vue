@@ -1,21 +1,19 @@
 <template>
   <div class="frame">
     <header id="header">
-      <div class="sticky">
-        <nuxt-link to="/" class="link">
-          <div class="logo-wrap">
-            <h1 class="logo">aodnawg</h1>
-            <h2 class="headline">glsl works.</h2>
-          </div>
-        </nuxt-link>
-        <div class="social">
-          <a href="https://www.instagram.com/aodnawg/" target="_blank">
-            <fa :icon="faInstagram" />
-          </a>
-          <a href="https://twitter.com/aodnawg" target="_blank">
-            <fa :icon="faTwitter" />
-          </a>
+      <nuxt-link to="/" class="link">
+        <div class="logo-wrap">
+          <h1 class="logo">aodnawg</h1>
+          <h2 class="headline">glsl works.</h2>
         </div>
+      </nuxt-link>
+      <div class="social">
+        <a href="https://www.instagram.com/aodnawg/" target="_blank">
+          <fa :icon="faInstagram" />
+        </a>
+        <a href="https://twitter.com/aodnawg" target="_blank">
+          <fa :icon="faTwitter" />
+        </a>
       </div>
     </header>
 
@@ -70,15 +68,6 @@
     flex-direction: column;
     /* margin: 0 16px; */
     margin: 0;
-  }
-}
-
-.sticky {
-  position: sticky;
-  top: 48px;
-
-  @media (max-width: 768px) {
-    position: static;
   }
 }
 
