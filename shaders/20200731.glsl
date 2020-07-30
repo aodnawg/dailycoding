@@ -59,8 +59,14 @@ vec2 pmod(vec2 p, float r) {
     return p*rot(-a);
 }
 
+float smin( float a, float b, float k ){
+  float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+  return mix( b, a, h ) - k*h*(1.0-h);
+}
+
+
 float map(vec3 p) {
-  float n = noise(p+vec3(time));
+  float n = noise(p+vec3(time))-.5;
   p.xz *= rot(p.y*.1);
   p.xy *= rot(p.y*.1+n*length(p)*.001);
   p.xz *= rot(p.y*.1);
@@ -73,12 +79,12 @@ float map(vec3 p) {
   float result = length(p.xz)-min(1., max(0., cos(length(p)/n2)))*.1;
   // result = min(result, length(p.xy)-.5);
 
-  return smin(result/10., length(p)-10.);
+  return smin(result, length(p)-10.*noise(vec3(time))-20., 6.)/10.;
 }
 
 void main(void) {
   vec2 uv = (gl_FragCoord.xy-.5*resolution.xy)/resolution.y;
-  float rt = time *.3;
+  float rt = time *.3 + 7891.22;
   float tn = noise(vec3(rt))*5.;
   vec3 ro = vec3(cos(rt), 0., sin(rt))*70.+tn*10.;
 
