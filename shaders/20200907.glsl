@@ -1,4 +1,4 @@
-// @day 86
+// @day 87
 // @title
 // @tag raymarching,digitalart,glsl,shader,creativecoding,cgi,generativeart
 
@@ -64,31 +64,34 @@ float smin( float a, float b, float k ){
   return mix( b, a, h ) - k*h*(1.0-h);
 }
 
+float torus(vec3 p) {
+  p.xy *= rot(p.z*.4);
+  p.xy *= rot(p.z*noise(time*.1*vec3(1.)*10.-20.));
+  vec2 cp = vec2(length(p.xz)-2., p.y);
+  cp *= rot(atan(p.z,p.x)*2.+time*.4);
+  cp = pmod(cp, mix(1.,3.,noise(time*vec3(1.))))+vec2(0.,-1.);
+  float d = length(cp)-.05;
+  d /= 1.4+length(p);
+  return d;
+}
 
 float map(vec3 p) {
-  float n = noise(p+vec3(time))-.5;
-  p.xz *= rot(p.y*.1);
-  p.xy *= rot(p.y*.1+n*length(p)*.001);
-  p.xz *= rot(p.y*.1);
-  p.x += 1.;
-  p.xz = pmod(p.xz, 10.);
-  p.zy *= rot(time*.2);
-  p.xz *= rot(4.5+n*.1);
-  p.xy = pmod(p.xy, 20.);
-  float n2 = n*10.+40.;
-  float result = length(p.xz)-min(1., max(0., cos(length(p)/n2)))*.1;
-  // result = min(result, length(p.xy)-.5);
-
-  return smin(result, length(p)-10.*noise(vec3(time))-20., 6.)/10.;
+  float d = torus(p);
+  vec3 p_ = p;
+  for(float i=0.;i<=3.;i++) {
+    p_.xz *= rot(PI*.3);
+    p_.xy *= rot(PI*.3*time);
+    d = smin(d, torus(p_),.1);
+  }
+  return d;
 }
 
 void main(void) {
   vec2 uv = (gl_FragCoord.xy-.5*resolution.xy)/resolution.y;
   float rt = time *.3 + 7891.22;
   float tn = noise(vec3(rt))*5.;
-  vec3 ro = vec3(cos(rt), 0., sin(rt))*70.+tn*10.;
-
-  vec3 lookat = vec3(0, tn, 0.);
+  vec3 ro = vec3(0.,0.,8.);
+  vec3 lookat = vec3(0., 0., 0.);
 
   // initialize
   vec3 rd = makeRay(ro, lookat, uv);
@@ -97,19 +100,21 @@ void main(void) {
   vec3 p;
 
   // ray march
-  float step=0.;
+  float s2=0.;
   for(int i = 0; i <= MAX_LOOP; i++) {
     p = ro+rd*t;
     float d = map(p);
-    d = max(MIN_SURF+0.001, abs(d));
-    if(d>MAX_DIST || d<MIN_SURF) {
+    if(d>MAX_DIST) {
+      col = vec3(1.);
       break;
     }
-    step += 1.;
+    if(d<MIN_SURF){
+      break;
+    }
     t += d;
+    s2 += 1.;
   }
 
-  col = vec3(step/1000.);
-  col = pow(col, vec3(3.)+pow(sin(time*2.), 2.));
+  col += vec3(.003)*s2;
   gl_FragColor = vec4(col, 1.);
 }
