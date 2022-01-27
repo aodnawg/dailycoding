@@ -27,7 +27,7 @@
     "nuxt": "^2.0.0",
     "nuxt-buefy": "^0.3.2",
     "nuxt-fontawesome": "^0.4.0",
-    "three": "^0.116.1",
+    "three": "^0.137.0",
     "vue-property-decorator": "^8.4.2"
   },
   "devDependencies": {
